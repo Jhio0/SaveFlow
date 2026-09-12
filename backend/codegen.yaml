@@ -1,0 +1,12 @@
+schema: "graphql/customerSchema.graphql"
+generates:
+  src/application/api/customer/schema.ts:
+    plugins:
+      - "typescript"
+    config:
+      enumsAsTypes: false
+      contextType: any
+      scalars:
+        ID: string
+      namingConvention:
+      typeNames: keep

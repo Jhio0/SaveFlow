@@ -1,0 +1,33 @@
+# Node modules
+node_modules/
+.pnpm-store/
+
+# Build outputs
+build/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Logs
+pnpm-debug.log*
+
+# Environment variables
+.env
+
+# VSCode / IDE
+.vscode/
+.idea/
+
+# Coverage
+coverage/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Generated files
+*.js
+*.js.map
+
+# Optional: generated GraphQL code
+graphql.schema.json
