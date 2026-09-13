@@ -66,6 +66,8 @@ describe("MeResolver", () => {
     mockAuthService.getCurrentUserId.mockReturnValueOnce(userId);
     mockUserRepository.findById.mockRejectedValueOnce(new Error("DB Error"));
 
-    await expect(mockUserRepository.findById(userId)).rejects.toThrow("DB Error");
+    await expect(mockUserRepository.findById(userId)).rejects.toThrow(
+      "DB Error",
+    );
   });
 });

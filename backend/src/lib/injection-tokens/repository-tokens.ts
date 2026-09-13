@@ -2,6 +2,7 @@
 
 enum RepositoryTokens {
   UserRepository = 'UserRepository',
+  ApplicationRepository = 'ApplicationRepository',
 }
 
 type RepositoryTokensType = keyof typeof RepositoryTokens;
