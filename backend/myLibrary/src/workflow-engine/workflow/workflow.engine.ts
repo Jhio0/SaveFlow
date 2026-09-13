@@ -12,6 +12,7 @@ import {
 } from "../types/workflow.types";
 import { Workflow } from "./workflow";
 
+//plan to make this into a single ton instead
 export class WorkflowEngine {
   constructor(
     private workflow: Workflow, // the workflow containing nodes and edges

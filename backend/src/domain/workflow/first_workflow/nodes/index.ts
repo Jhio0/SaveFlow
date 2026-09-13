@@ -1,6 +1,18 @@
-import { EndNode, StartNode, Workflow } from "myLibrary";
+import { EndNode, StartNode, Workflow, WorkflowContext } from "myLibrary";
 import { FetchDataNode } from "./FetchDataNode";
 import { PrintDataNode } from "./printNode";
+import { ApplicationRepositoryPort } from "../../../repository/application.repository.port";
+
+export type WorkflowDeps = {
+  applicationRepository: ApplicationRepositoryPort;
+};
+
+export type WorkflowIntialContext = {
+  context: WorkflowContext;
+  currentNodeId: string;
+  results: [];
+  completed: boolean;
+};
 
 export type WorkflowNodes = {
   start: StartNode;
@@ -9,7 +21,7 @@ export type WorkflowNodes = {
   end: EndNode;
 };
 
-export function createNodes(): WorkflowNodes {
+export function createNodes(deps: WorkflowDeps): WorkflowNodes {
   return {
     start: new StartNode(),
     fetch: new FetchDataNode(),

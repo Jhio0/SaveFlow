@@ -1,0 +1,53 @@
+import { getCurrentScreen, Provider, WorkflowEngine } from "myLibrary";
+import { ApplicationStatus } from "../entities/application";
+
+import { RepositoryTokens } from "../../lib/injection-tokens/repository-tokens";
+import { ApplicationRepositoryPort } from "../repository/application.repository.port";
+import { createApplicationWorkflowEngine } from "../workflow/first_workflow/engine";
+import { inject } from "../../lib/strict-inject";
+import ApplicationProviderPort from "./application.provider.port";
+import {
+  ApplicationScreen,
+  nodeIdToScreen,
+} from "../entities/application-screen";
+
+@Provider
+export class ApplicationProviderAdapter implements ApplicationProviderPort {
+  private engine: WorkflowEngine;
+
+  constructor(
+    @inject(RepositoryTokens.ApplicationRepository)
+    private applicationRepositoryPort: ApplicationRepositoryPort,
+  ) {
+    this.engine = createApplicationWorkflowEngine({
+      applicationRepository: this.applicationRepositoryPort,
+    });
+  }
+
+  async createApplication(userId: string): Promise<ApplicationScreen> {
+    const state = await this.engine.run();
+
+    const application = await this.applicationRepositoryPort.create({
+      userId,
+      workflowContext: {
+        context: state.context,
+        currentNodeId: state.currentNodeId,
+      },
+      status: ApplicationStatus.IN_PROGRESS,
+    });
+
+    this.engine = createApplicationWorkflowEngine(
+      {
+        applicationRepository: this.applicationRepositoryPort,
+      },
+      {
+        context: application.workflowContext.context,
+        currentNodeId: application.workflowContext.currentNodeId,
+        results: [],
+        completed: false,
+      },
+    );
+
+    return getCurrentScreen(nodeIdToScreen, state);
+  }
+}

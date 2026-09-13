@@ -13,12 +13,15 @@ class UserRepositoryAdapter
   extends BaseRepository<UserDocument, User, CreateUser, UpdateUser>
   implements UserRepositoryPort
 {
-  async findByEmail(email: string): Promise<User | null> {
+  async findByEmail(email: string): Promise<User> {
     const user = await this.model.findOne({ email }).exec();
+
+    if (!user) {
+      throw new Error(`User with email ${email} not found`);
+    }
 
     return this.toObject(user);
   }
-
   protected toObject(document: UserDocument): User {
     return {
       id: document._id.toHexString(),

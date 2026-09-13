@@ -14,14 +14,24 @@ export type Scalars = {
   Float: { input: number; output: number; }
 };
 
+export enum ApplicationScreen {
+  IncomeDetailScreen = 'IncomeDetailScreen'
+}
+
 export type AuthPayload = {
   __typename?: 'AuthPayload';
   token: Scalars['String']['output'];
   user: User;
 };
 
+export type CreateApplicationPayload = {
+  __typename?: 'CreateApplicationPayload';
+  screen?: Maybe<ApplicationScreen>;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
+  createApplication: CreateApplicationPayload;
   createUser: User;
   signup: AuthPayload;
 };

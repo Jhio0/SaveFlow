@@ -10,7 +10,7 @@ export interface Application {
     context: any;
     currentNodeId: string;
   };
-  screen: string;
   status: ApplicationStatus;
+  screen?: string;
   submittedAt?: Date;
 }
