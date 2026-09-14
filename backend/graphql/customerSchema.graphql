@@ -15,6 +15,7 @@ type Mutation {
   createUser(name: String!, dateOfBirth: String!, email: String!): User!
   signup(name: String!, email: String!, password: String!, dateOfBirth: String!): AuthPayload!
   createApplication: CreateApplicationPayload!
+  submitCollectIncomeApplication(input: CollectIncomeApplicationInput!): CreateApplicationPayload!
 }
 
 type AuthPayload {
@@ -24,8 +25,14 @@ type AuthPayload {
 
 enum ApplicationScreen {
   IncomeDetailScreen
+  CompletedScreen
 }
 
 type CreateApplicationPayload {
   screen: ApplicationScreen
+}
+
+input CollectIncomeApplicationInput {
+  applicationId: ID!
+  incomeAmount: Int!
 }

@@ -1,15 +1,17 @@
-import { getCurrentScreen, Provider, WorkflowEngine } from "myLibrary";
-import { ApplicationStatus } from "../entities/application";
+import {
+  getCurrentScreen,
+  Provider,
+  WorkflowContext,
+  WorkflowEngine,
+} from "myLibrary";
+import { ApplicationScreen, ApplicationStatus } from "../entities/application";
 
 import { RepositoryTokens } from "../../lib/injection-tokens/repository-tokens";
 import { ApplicationRepositoryPort } from "../repository/application.repository.port";
 import { createApplicationWorkflowEngine } from "../workflow/first_workflow/engine";
 import { inject } from "../../lib/strict-inject";
 import ApplicationProviderPort from "./application.provider.port";
-import {
-  ApplicationScreen,
-  nodeIdToScreen,
-} from "../entities/application-screen";
+import { nodeIdToScreen } from "../entities/application-screen";
 
 @Provider
 export class ApplicationProviderAdapter implements ApplicationProviderPort {
@@ -47,6 +49,36 @@ export class ApplicationProviderAdapter implements ApplicationProviderPort {
         completed: false,
       },
     );
+
+    return getCurrentScreen(nodeIdToScreen, state);
+  }
+
+  async submitScreen<T extends WorkflowContext>(
+    applicationId: string,
+    data: T,
+  ): Promise<ApplicationScreen> {
+    const application =
+      await this.applicationRepositoryPort.findById(applicationId);
+
+    if (!application.screen) {
+      throw new Error("context screen is undefined, cannot be undefined");
+    }
+
+    const state = await this.engine.storeCollectedData(data);
+
+    await this.applicationRepositoryPort.updateOne(applicationId, {
+      workflowContext: {
+        context: state.context,
+        currentNodeId: state.currentNodeId,
+      },
+      ...(state.completed
+        ? { status: ApplicationStatus.IN_PROGRESS }
+        : { status: ApplicationStatus.COMPLETED }),
+    });
+
+    if (state.completed) {
+      return ApplicationScreen.CompletedScreen;
+    }
 
     return getCurrentScreen(nodeIdToScreen, state);
   }

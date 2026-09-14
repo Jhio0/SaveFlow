@@ -2,6 +2,7 @@
 
 enum ProviderTokens {
   ApplicationProviderAdapter = 'ApplicationProviderAdapter',
+  SubmitIncomeNodeHandlerProviderAdapter = 'SubmitIncomeNodeHandlerProviderAdapter',
   AuthProviderAdapter = 'AuthProviderAdapter',
 }
 

@@ -1,11 +1,10 @@
 import { invertMap } from "myLibrary";
-
-export enum ApplicationScreen {
-  IncomeDetailScreen = "IncomeDetailScreen",
-}
+import { CollectIncomeNode } from "../workflow/first_workflow/nodes/collect-income.node";
+import { ApplicationScreen } from "./application";
 
 export const screenToNodeId: Record<ApplicationScreen, string> = {
-  [ApplicationScreen.IncomeDetailScreen]: "exampleforNow", //nodeId
+  [ApplicationScreen.IncomeDetailScreen]: CollectIncomeNode.NODE_ID,
+  [ApplicationScreen.CompletedScreen]: "asdsa",
 };
 
 export const nodeIdToScreen: Record<string, ApplicationScreen> =

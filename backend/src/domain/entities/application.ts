@@ -3,6 +3,11 @@ export enum ApplicationStatus {
   COMPLETED = "COMPLETED",
 }
 
+export enum ApplicationScreen {
+  IncomeDetailScreen = "IncomeDetailScreen",
+  CompletedScreen = "CompletedScreen",
+}
+
 export interface Application {
   id: string;
   userId: string;

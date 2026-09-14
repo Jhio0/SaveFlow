@@ -5,12 +5,12 @@ export function registerEdges(workflow: Workflow, nodes: WorkflowNodes): void {
   workflow.addEdge({
     sourceNodeId: nodes.start.id,
     sourcePinId: "outputNavigationPin",
-    targetNodeId: nodes.fetch.id,
+    targetNodeId: nodes.collectIncome.id,
     targetPinId: "inputNavigationPin",
   });
 
   workflow.addEdge({
-    sourceNodeId: nodes.fetch.id,
+    sourceNodeId: nodes.collectIncome.id,
     sourcePinId: "outputNavigationPin",
     targetNodeId: nodes.print.id,
     targetPinId: "inputNavigationPin",

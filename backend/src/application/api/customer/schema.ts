@@ -15,6 +15,7 @@ export type Scalars = {
 };
 
 export enum ApplicationScreen {
+  CompletedScreen = 'CompletedScreen',
   IncomeDetailScreen = 'IncomeDetailScreen'
 }
 
@@ -22,6 +23,11 @@ export type AuthPayload = {
   __typename?: 'AuthPayload';
   token: Scalars['String']['output'];
   user: User;
+};
+
+export type CollectIncomeApplicationInput = {
+  applicationId: Scalars['ID']['input'];
+  incomeAmount: Scalars['Int']['input'];
 };
 
 export type CreateApplicationPayload = {
@@ -34,6 +40,7 @@ export type Mutation = {
   createApplication: CreateApplicationPayload;
   createUser: User;
   signup: AuthPayload;
+  submitCollectIncomeApplication: CreateApplicationPayload;
 };
 
 
@@ -49,6 +56,11 @@ export type MutationSignupArgs = {
   email: Scalars['String']['input'];
   name: Scalars['String']['input'];
   password: Scalars['String']['input'];
+};
+
+
+export type MutationSubmitCollectIncomeApplicationArgs = {
+  input: CollectIncomeApplicationInput;
 };
 
 export type Query = {
