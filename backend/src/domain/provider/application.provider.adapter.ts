@@ -66,8 +66,6 @@ export class ApplicationProviderAdapter implements ApplicationProviderPort {
 
     const state = await this.engine.storeCollectedData(data);
 
-    console.log(`State::::::: ${JSON.stringify(state)}`);
-
     await this.applicationRepositoryPort.updateOne(applicationId, {
       workflowContext: {
         context: state.context,
