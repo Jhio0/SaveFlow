@@ -38,13 +38,12 @@ export type CreateApplicationPayload = {
 
 export type ExpenseApplicationInput = {
   applicationId: Scalars['ID']['input'];
-  items: ExpenseItems;
+  items: ExpenseItemsInput;
 };
 
-export type ExpenseItems = {
-  __typename?: 'ExpenseItems';
-  amount: Scalars['Int']['output'];
-  name: Scalars['String']['output'];
+export type ExpenseItemsInput = {
+  amount: Scalars['Int']['input'];
+  name: Scalars['String']['input'];
   source: ExpenseSource;
 };
 

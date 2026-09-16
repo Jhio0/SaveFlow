@@ -27,6 +27,8 @@ export class SubmitIncomeScreenMutationResolver {
         incomeAmount: args.input.incomeAmount,
       });
 
+    console.log(screen);
+
     return { screen: mapDomainToSchemaScreen(screen) };
   }
 }

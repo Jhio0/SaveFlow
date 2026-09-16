@@ -2,12 +2,12 @@ import { Provider } from "myLibrary";
 import { ProviderTokens } from "../../../lib/injection-tokens/provider-tokens";
 import { inject } from "../../../lib/strict-inject";
 
-import { CollectIncomeExecuteInput } from "../../workflow/first_workflow/nodes/collect-income.node";
 import ApplicationProviderPort from "../application.provider.port";
 import SubmitIncomeNodeHandlerProviderPort, {
   handleIncomeNodeHandlerInput,
 } from "./submit-income-node-handler.provider.port";
 import { ApplicationScreen } from "../../entities/application";
+import { CollectIncomeResolveInput } from "../../workflow/first_workflow/nodes/collect-income.node";
 
 @Provider
 export class SubmitIncomeNodeHandlerProviderAdapter implements SubmitIncomeNodeHandlerProviderPort {
@@ -19,9 +19,14 @@ export class SubmitIncomeNodeHandlerProviderAdapter implements SubmitIncomeNodeH
   async handleIncomeNodeHandler(
     input: handleIncomeNodeHandlerInput,
   ): Promise<ApplicationScreen> {
-    return await this.applicationProviderPort.submitScreen<CollectIncomeExecuteInput>(
-      input.applicationId,
-      { incomeAmount: input.incomeAmount },
-    );
+    const screen =
+      await this.applicationProviderPort.submitScreen<CollectIncomeResolveInput>(
+        input.applicationId,
+        { incomeAmount: input.incomeAmount },
+      );
+
+    console.log(screen);
+
+    return screen;
   }
 }

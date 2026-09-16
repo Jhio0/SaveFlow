@@ -1,56 +1,47 @@
-import { AsyncNode, injectable, NoInput } from "myLibrary";
+import { AsyncNode, injectable, NoInput, NoOutput } from "myLibrary";
 import z from "zod";
 import { ApplicationScreen } from "../../../entities/application";
+import { noInputSchema } from "./shared-node.schema";
 
-const collectIncomeExecuteInputSchema = z.object({});
 const collectIncomeExecuteOutputSchema = z.object({
   screen: z.literal(ApplicationScreen.IncomeDetailScreen),
 });
 const collectIncomeResolveInputSchema = z.object({
   incomeAmount: z.number(),
 });
-const collectIncomeResolveOuputSchema = z.object({});
 
-type CollectIncomeResolveInput = z.infer<
-  typeof collectIncomeExecuteInputSchema
->;
-type CollectIncomeResolveOutput = z.infer<
+type CollectIncomeExecuteOuput = z.infer<
   typeof collectIncomeExecuteOutputSchema
 >;
 
-export type CollectIncomeExecuteInput = z.infer<
+export type CollectIncomeResolveInput = z.infer<
   typeof collectIncomeResolveInputSchema
->;
-export type CollectIncomeExecuteOutput = z.infer<
-  typeof collectIncomeResolveOuputSchema
 >;
 
 @injectable()
 export class CollectIncomeNode extends AsyncNode<
+  NoInput,
+  CollectIncomeExecuteOuput,
   CollectIncomeResolveInput,
-  CollectIncomeResolveOutput,
-  CollectIncomeExecuteInput,
-  CollectIncomeExecuteOutput
+  NoInput
 > {
   static readonly NODE_ID = "CollectIncome";
-  readonly executeInputSchema = collectIncomeExecuteInputSchema;
+  readonly executeInputSchema = noInputSchema;
   readonly executeOutputSchema = collectIncomeExecuteOutputSchema;
   readonly resolveInputSchema = collectIncomeResolveInputSchema;
-  readonly resolveOutputSchema = collectIncomeResolveOuputSchema;
+  readonly resolveOutputSchema = noInputSchema;
 
   constructor() {
     super(CollectIncomeNode.NODE_ID);
   }
 
-  async executionAction(_: NoInput): Promise<CollectIncomeResolveOutput> {
+  async executionAction(_: NoInput): Promise<CollectIncomeExecuteOuput> {
     return {
       screen: ApplicationScreen.IncomeDetailScreen,
     };
   }
 
-  async resolutionAction(
-    _: CollectIncomeExecuteInput,
-  ): Promise<CollectIncomeExecuteOutput> {
+  async resolutionAction(_: CollectIncomeResolveInput): Promise<NoOutput> {
     return {};
   }
 

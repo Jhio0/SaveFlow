@@ -31,4 +31,4 @@ export * from "./workflow-engine";
 // ------------------------
 // helper
 // ------------------------
-export * from "./helper/getEnumList";
+export * from "./helper/enum.utils";

@@ -1,4 +1,4 @@
-import { GraphQLContext, Resolver } from "myLibrary";
+import { enumFromKeyStringThrow, GraphQLContext, Resolver } from "myLibrary";
 import { inject } from "../../../../../../lib/strict-inject";
 import { ProviderTokens } from "../../../../../../lib/injection-tokens/provider-tokens";
 import { CollectedExpenseDataProviderPort } from "../../../../../../domain/provider/collected-expense-data.provider.port";
@@ -7,9 +7,10 @@ import {
   ExpenseApplicationInput,
 } from "../../../schema";
 import { mapDomainToSchemaScreen } from "./screen-mapper";
+import { ExpenseSource } from "../../../../../../domain/entities/collected-expsense-data";
 
 @Resolver
-class SubmitExpenseScreenMutationResolver {
+export class SubmitExpenseScreenMutationResolver {
   constructor(
     @inject(ProviderTokens.CollectedExpenseDataProviderAdapter)
     private collectedExpenseDataProviderPort: CollectedExpenseDataProviderPort,
@@ -21,12 +22,13 @@ class SubmitExpenseScreenMutationResolver {
     context: GraphQLContext,
   ): Promise<CreateApplicationPayload> {
     const { items, applicationId } = args.input;
-    const screen = this.collectedExpenseDataProviderPort.handleExpenseNode({
-      name: items.name,
-      amount: items.amount,
-      source: items.source,
-      applicationId,
-    });
+    const screen =
+      await this.collectedExpenseDataProviderPort.handleExpenseNode({
+        name: items.name,
+        amount: items.amount,
+        source: enumFromKeyStringThrow(ExpenseSource, items.source),
+        applicationId,
+      });
 
     return { screen: mapDomainToSchemaScreen(screen) };
   }

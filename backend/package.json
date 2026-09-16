@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "tsc && pnpm run strict-inject",
+    "build": "pnpm run strict-inject && tsc",
     "strict-inject": "ts-node scripts/generate-strict-inject.ts",
     "codegen": "graphql-codegen",
     "export-schema": "ts-node scripts/export-schema.ts",

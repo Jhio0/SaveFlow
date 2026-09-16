@@ -57,14 +57,11 @@ export class ApplicationProviderAdapter implements ApplicationProviderPort {
     applicationId: string,
     data: T,
   ): Promise<ApplicationScreen> {
-    const application =
-      await this.applicationRepositoryPort.findById(applicationId);
-
-    if (!application.screen) {
-      throw new Error("context screen is undefined, cannot be undefined");
-    }
+    await this.applicationRepositoryPort.findById(applicationId);
 
     const state = await this.engine.storeCollectedData(data);
+
+    console.log(state);
 
     await this.applicationRepositoryPort.updateOne(applicationId, {
       workflowContext: {
@@ -72,14 +69,17 @@ export class ApplicationProviderAdapter implements ApplicationProviderPort {
         currentNodeId: state.currentNodeId,
       },
       ...(state.completed
-        ? { status: ApplicationStatus.IN_PROGRESS }
-        : { status: ApplicationStatus.COMPLETED }),
+        ? { status: ApplicationStatus.COMPLETED }
+        : { status: ApplicationStatus.IN_PROGRESS }),
     });
 
     if (state.completed) {
       return ApplicationScreen.CompletedScreen;
     }
 
-    return getCurrentScreen(nodeIdToScreen, state);
+    const screen = getCurrentScreen(nodeIdToScreen, state);
+
+    console.log(screen);
+    return screen;
   }
 }
