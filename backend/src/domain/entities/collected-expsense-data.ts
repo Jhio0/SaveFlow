@@ -1,7 +1,11 @@
+export enum ExpenseSource {
+  ESSENTIALS = "ESSENTIALS",
+}
+
 export type ExpenseItems = {
   name: string;
   amount: number;
-  source: "preset" | "subscription";
+  source: ExpenseSource;
 };
 
 export interface CollectedExpenseData {

@@ -16,6 +16,7 @@ type Mutation {
   signup(name: String!, email: String!, password: String!, dateOfBirth: String!): AuthPayload!
   createApplication: CreateApplicationPayload!
   submitCollectIncomeApplication(input: CollectIncomeApplicationInput!): CreateApplicationPayload!
+  submitEssentialExpenseApplication(input: ExpenseApplicationInput!): CreateApplicationPayload!
 }
 
 type AuthPayload {
@@ -25,14 +26,30 @@ type AuthPayload {
 
 enum ApplicationScreen {
   IncomeDetailScreen
+  EssentialExpenseScreen
   CompletedScreen
+}
+
+enum ExpenseSource {
+  ESSENTIALS
 }
 
 type CreateApplicationPayload {
   screen: ApplicationScreen
 }
 
+type ExpenseItems {
+  name: String!
+  amount: Int!
+  source: ExpenseSource!
+}
+
 input CollectIncomeApplicationInput {
   applicationId: ID!
   incomeAmount: Int!
+}
+
+input ExpenseApplicationInput {
+  applicationId: ID!
+  items: ExpenseItems!
 }
