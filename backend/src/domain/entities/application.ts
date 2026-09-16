@@ -16,7 +16,7 @@ export interface Application {
     context: any;
     currentNodeId: string;
   };
-  status: ApplicationStatus;
   screen?: string;
+  status: ApplicationStatus;
   submittedAt?: Date;
 }

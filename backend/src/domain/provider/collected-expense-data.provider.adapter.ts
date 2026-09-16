@@ -7,7 +7,7 @@ import { ApplicationScreen } from "../entities/application";
 import { inject } from "tsyringe";
 import { ProviderTokens } from "../../lib/injection-tokens/provider-tokens";
 import ApplicationProviderPort from "./application.provider.port";
-import { ExpenseResolveInput } from "../workflow/first_workflow/nodes/shared-node.schema";
+import { ExpenseResolveInput } from "../workflow/first_workflow/nodes/essential-expense-node";
 
 @Provider
 export class CollectedExpenseDataProviderAdapter implements CollectedExpenseDataProviderPort {
@@ -21,7 +21,9 @@ export class CollectedExpenseDataProviderAdapter implements CollectedExpenseData
   ): Promise<ApplicationScreen> {
     return await this.applicationProviderPort.submitScreen<ExpenseResolveInput>(
       input.applicationId,
-      { name: input.name, amount: input.amount, source: input.source },
+      {
+        items: input.items,
+      },
     );
   }
 }

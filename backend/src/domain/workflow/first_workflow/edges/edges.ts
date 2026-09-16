@@ -19,13 +19,6 @@ export function registerEdges(workflow: Workflow, nodes: WorkflowNodes): void {
   workflow.addEdge({
     sourceNodeId: nodes.essentialExpense.id,
     sourcePinId: "outputNavigationPin",
-    targetNodeId: nodes.print.id,
-    targetPinId: "inputNavigationPin",
-  });
-
-  workflow.addEdge({
-    sourceNodeId: nodes.print.id,
-    sourcePinId: "outputNavigationPin",
     targetNodeId: nodes.end.id,
     targetPinId: "inputNavigationPin",
   });

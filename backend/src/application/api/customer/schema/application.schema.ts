@@ -30,7 +30,7 @@ export const applicationSchema = gql`
   
   input ExpenseApplicationInput {
     applicationId: ID!
-    items: ExpenseItemsInput!
+    items: [ExpenseItemsInput!]!
   }
 
   type Mutation {

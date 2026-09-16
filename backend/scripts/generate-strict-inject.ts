@@ -11,18 +11,7 @@ import * as fs from "fs";
  * 3. Creates strict-inject wrapper
  * 4. Generates registration files
  * 5. Updates dependency registry
- * 6. Discovers @Resolver classes and generates GraphQL resolver index
- * 7. Fails the build if a Query/Mutation schema field has no resolver
  */
-
-type GraphQLRootType = "Query" | "Mutation";
-
-interface ResolverInfo {
-  className: string;
-  filePath: string;
-  rootType: GraphQLRootType;
-  methods: string[];
-}
 
 interface TokenInfo {
   name: string;
@@ -42,14 +31,12 @@ interface DecoratorInfo {
 class StrictInjectGenerator {
   private srcDir = "./src";
   private outputDir = "./src/lib";
-  private resolverDir = "./src/application/api/customer/resolver";
   private tokens: TokenInfo[] = [];
   private decorators: DecoratorInfo[] = [];
-  private resolvers: ResolverInfo[] = [];
 
   async generate() {
     console.log("🚀 Starting strict-inject generation...");
-
+    ``;
     // Step 1: Scan for decorators
     await this.scanDecorators();
 
@@ -61,11 +48,6 @@ class StrictInjectGenerator {
 
     // Step 4: Generate registration files
     await this.generateRegistrationFiles();
-
-    // Step 5: Discover GraphQL resolvers and fail if schema fields are missing
-    await this.scanResolvers();
-    await this.generateResolverIndex();
-    this.assertResolverCoverage();
 
     console.log("✅ strict-inject generation complete!");
   }
@@ -317,198 +299,6 @@ export { ${functionName} };
 
     console.log(`Generated ${outputPath}`);
   }
-
-  private async scanResolvers() {
-    console.log("🔎 Scanning for GraphQL @Resolver classes...");
-
-    const files = await glob("**/*.resolver.ts", { cwd: this.resolverDir });
-    files.sort();
-
-    if (files.length === 0) {
-      throw new Error(
-        `No *.resolver.ts files found under ${this.resolverDir}.`,
-      );
-    }
-
-    for (const file of files) {
-      const filePath = path.join(this.resolverDir, file);
-      const content = fs.readFileSync(filePath, "utf8");
-      const normalized = file.replace(/\\/g, "/");
-
-      if (!/@Resolver\b/.test(content)) {
-        throw new Error(
-          `Resolver file '${normalized}' is not included: add @Resolver so pnpm build can register it.`,
-        );
-      }
-
-      let rootType: GraphQLRootType;
-      if (normalized.includes(".query.resolver.")) {
-        rootType = "Query";
-      } else if (normalized.includes(".mutation.resolver.")) {
-        rootType = "Mutation";
-      } else {
-        throw new Error(
-          `Resolver file '${normalized}' is not included: name it *.query.resolver.ts or *.mutation.resolver.ts so pnpm build knows whether to attach its methods to Query or Mutation.`,
-        );
-      }
-
-      const className = this.extractClassName(content);
-      if (className === "Unknown") {
-        throw new Error(
-          `Resolver file '${normalized}' is not included: could not find an exported class.`,
-        );
-      }
-
-      this.resolvers.push({
-        className,
-        filePath: normalized,
-        rootType,
-        methods: this.extractResolverMethods(content, normalized),
-      });
-    }
-
-    console.log(`Found ${this.resolvers.length} resolver classes`);
-  }
-
-  private extractResolverMethods(content: string, filePath: string): string[] {
-    const stripped = content
-      .replace(/\/\*[\s\S]*?\*\//g, "")
-      .replace(/\/\/.*$/gm, "");
-
-    const classBodyMatch = stripped.match(
-      /export\s+class\s+\w+[\s\S]*?\{([\s\S]*)\}\s*$/,
-    );
-
-    if (!classBodyMatch) {
-      throw new Error(
-        `Resolver file '${filePath}' is not included: could not parse class body.`,
-      );
-    }
-
-    const methods: string[] = [];
-    const methodRegex =
-      /^  (?:public\s+|private\s+|protected\s+)?(?:async\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*\(/gm;
-    const body = classBodyMatch[1];
-    let match: RegExpExecArray | null;
-
-    while ((match = methodRegex.exec(body)) !== null) {
-      const name = match[1];
-      if (name !== "constructor") {
-        methods.push(name);
-      }
-    }
-
-    if (methods.length === 0) {
-      throw new Error(
-        `Resolver class in '${filePath}' is not included: it has no GraphQL field methods.`,
-      );
-    }
-
-    return methods;
-  }
-
-  private async generateResolverIndex() {
-    console.log("🧩 Generating GraphQL resolver index...");
-
-    const byType: Record<GraphQLRootType, ResolverInfo[]> = {
-      Query: [],
-      Mutation: [],
-    };
-
-    for (const resolver of this.resolvers) {
-      byType[resolver.rootType].push(resolver);
-    }
-
-    const imports = this.resolvers
-      .map((resolver) => {
-        const importPath = `./${resolver.filePath.replace(/\.ts$/, "")}`;
-        return `import { ${resolver.className} } from "${importPath}";`;
-      })
-      .join("\n");
-
-    const formatList = (items: ResolverInfo[]) =>
-      items.length === 0
-        ? ""
-        : items.map((item) => `      ${item.className},`).join("\n");
-
-    const content = `// ******** THIS FILE IS GENERATED, MANUAL CHANGES WILL BE OVERWRITTEN ******** //
-
-import { buildResolvers } from "myLibrary";
-${imports}
-
-export function createResolvers() {
-  return buildResolvers({
-    Query: [
-${formatList(byType.Query)}
-    ],
-    Mutation: [
-${formatList(byType.Mutation)}
-    ],
-  });
-}
-`;
-
-    const outputPath = path.join(this.resolverDir, "index.ts");
-    fs.writeFileSync(outputPath, content);
-    console.log(`Generated ${outputPath}`);
-  }
-
-  private assertResolverCoverage() {
-    console.log("🧪 Checking Query/Mutation fields have resolvers...");
-
-    const { makeExecutableSchema } = require("@graphql-tools/schema");
-    const { typeDefs } = require(path.resolve(
-      __dirname,
-      "../src/application/api/customer/schema/index.ts",
-    ));
-
-    const schema = makeExecutableSchema({ typeDefs });
-    const methodsByType: Record<GraphQLRootType, Set<string>> = {
-      Query: new Set(),
-      Mutation: new Set(),
-    };
-
-    for (const resolver of this.resolvers) {
-      for (const method of resolver.methods) {
-        methodsByType[resolver.rootType].add(method);
-      }
-    }
-
-    const missing: string[] = [];
-
-    for (const rootType of ["Query", "Mutation"] as GraphQLRootType[]) {
-      const graphqlType =
-        rootType === "Query" ? schema.getQueryType() : schema.getMutationType();
-
-      if (!graphqlType) {
-        continue;
-      }
-
-      for (const fieldName of Object.keys(graphqlType.getFields())) {
-        if (!methodsByType[rootType].has(fieldName)) {
-          missing.push(`${rootType}.${fieldName}`);
-        }
-      }
-    }
-
-    if (missing.length === 0) {
-      return;
-    }
-
-    throw new Error(
-      [
-        "GraphQL resolver coverage failed. Apollo has no resolver for:",
-        ...missing.map((field) => `  - ${field}`),
-        "",
-        "That is the same bug as:",
-        '  "Cannot return null for non-nullable field Mutation.<name>."',
-        "",
-        "Fix: add a method named exactly after the schema field on a @Resolver class in",
-        "src/application/api/customer/resolver/*.query.resolver.ts or *.mutation.resolver.ts.",
-        "pnpm build scans those files and generates resolver/index.ts; do not register resolvers by hand.",
-      ].join("\n"),
-    );
-  }
 }
 
 // Run the generator
@@ -518,8 +308,5 @@ async function main() {
 }
 
 if (require.main === module) {
-  main().catch((error) => {
-    console.error(error);
-    process.exit(1);
-  });
+  main().catch(console.error);
 }

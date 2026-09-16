@@ -11,7 +11,7 @@ import { ApplicationRepositoryPort } from "../repository/application.repository.
 import { createApplicationWorkflowEngine } from "../workflow/first_workflow/engine";
 import { inject } from "../../lib/strict-inject";
 import ApplicationProviderPort from "./application.provider.port";
-import { nodeIdToScreen } from "../entities/application-screen";
+import { nodeIdToScreen, screenToNodeId } from "../entities/application-screen";
 
 @Provider
 export class ApplicationProviderAdapter implements ApplicationProviderPort {
@@ -57,11 +57,16 @@ export class ApplicationProviderAdapter implements ApplicationProviderPort {
     applicationId: string,
     data: T,
   ): Promise<ApplicationScreen> {
-    await this.applicationRepositoryPort.findById(applicationId);
+    const application =
+      await this.applicationRepositoryPort.findById(applicationId);
+
+    if (!application.workflowContext.context.screen) {
+      throw new Error("context screen is undefined, cannot be undefined");
+    }
 
     const state = await this.engine.storeCollectedData(data);
 
-    console.log(state);
+    console.log(`State::::::: ${JSON.stringify(state)}`);
 
     await this.applicationRepositoryPort.updateOne(applicationId, {
       workflowContext: {
@@ -77,9 +82,6 @@ export class ApplicationProviderAdapter implements ApplicationProviderPort {
       return ApplicationScreen.CompletedScreen;
     }
 
-    const screen = getCurrentScreen(nodeIdToScreen, state);
-
-    console.log(screen);
-    return screen;
+    return getCurrentScreen(nodeIdToScreen, state);
   }
 }

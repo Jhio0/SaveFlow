@@ -6,7 +6,7 @@ import { noInputSchema } from "./shared-node.schema";
 const collectIncomeExecuteOutputSchema = z.object({
   screen: z.literal(ApplicationScreen.IncomeDetailScreen),
 });
-const collectIncomeResolveInputSchema = z.object({
+const collectIncomeResolveSchema = z.object({
   incomeAmount: z.number(),
 });
 
@@ -15,7 +15,11 @@ type CollectIncomeExecuteOuput = z.infer<
 >;
 
 export type CollectIncomeResolveInput = z.infer<
-  typeof collectIncomeResolveInputSchema
+  typeof collectIncomeResolveSchema
+>;
+
+export type CollectIncomeResolveOutput = z.infer<
+  typeof collectIncomeResolveSchema
 >;
 
 @injectable()
@@ -23,13 +27,13 @@ export class CollectIncomeNode extends AsyncNode<
   NoInput,
   CollectIncomeExecuteOuput,
   CollectIncomeResolveInput,
-  NoInput
+  CollectIncomeResolveOutput
 > {
   static readonly NODE_ID = "CollectIncome";
   readonly executeInputSchema = noInputSchema;
   readonly executeOutputSchema = collectIncomeExecuteOutputSchema;
-  readonly resolveInputSchema = collectIncomeResolveInputSchema;
-  readonly resolveOutputSchema = noInputSchema;
+  readonly resolveInputSchema = collectIncomeResolveSchema;
+  readonly resolveOutputSchema = collectIncomeResolveSchema;
 
   constructor() {
     super(CollectIncomeNode.NODE_ID);
@@ -41,8 +45,12 @@ export class CollectIncomeNode extends AsyncNode<
     };
   }
 
-  async resolutionAction(_: CollectIncomeResolveInput): Promise<NoOutput> {
-    return {};
+  async resolutionAction(
+    input: CollectIncomeResolveInput,
+  ): Promise<CollectIncomeResolveOutput> {
+    return {
+      incomeAmount: input.incomeAmount,
+    };
   }
 
   async determineOutputPin(context: NoInput) {

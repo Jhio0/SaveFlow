@@ -38,7 +38,7 @@ export type CreateApplicationPayload = {
 
 export type ExpenseApplicationInput = {
   applicationId: Scalars['ID']['input'];
-  items: ExpenseItemsInput;
+  items: Array<ExpenseItemsInput>;
 };
 
 export type ExpenseItemsInput = {

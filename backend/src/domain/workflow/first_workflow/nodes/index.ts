@@ -19,7 +19,6 @@ export type WorkflowNodes = {
   start: StartNode;
   collectIncome: CollectIncomeNode;
   essentialExpense: EssentialExpenseNode;
-  print: PrintDataNode;
   end: EndNode;
 };
 
@@ -28,7 +27,6 @@ export function createNodes(deps: WorkflowDeps): WorkflowNodes {
     start: new StartNode(),
     collectIncome: new CollectIncomeNode(),
     essentialExpense: new EssentialExpenseNode(),
-    print: new PrintDataNode(),
     end: new EndNode(),
   };
 }
@@ -37,6 +35,5 @@ export function registerNodes(workflow: Workflow, nodes: WorkflowNodes): void {
   workflow.addNode(nodes.start);
   workflow.addNode(nodes.collectIncome);
   workflow.addNode(nodes.essentialExpense);
-  workflow.addNode(nodes.print);
   workflow.addNode(nodes.end);
 }

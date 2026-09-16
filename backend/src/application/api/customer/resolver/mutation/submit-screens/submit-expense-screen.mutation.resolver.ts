@@ -24,10 +24,12 @@ export class SubmitExpenseScreenMutationResolver {
     const { items, applicationId } = args.input;
     const screen =
       await this.collectedExpenseDataProviderPort.handleExpenseNode({
-        name: items.name,
-        amount: items.amount,
-        source: enumFromKeyStringThrow(ExpenseSource, items.source),
         applicationId,
+        items: items.map((item) => ({
+          name: item.name,
+          amount: item.amount,
+          source: enumFromKeyStringThrow(ExpenseSource, item.source),
+        })),
       });
 
     return { screen: mapDomainToSchemaScreen(screen) };
