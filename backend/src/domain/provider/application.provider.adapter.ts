@@ -3,33 +3,37 @@ import {
   Provider,
   WorkflowContext,
   WorkflowEngine,
+  WorkflowState,
 } from "myLibrary";
 import { ApplicationScreen, ApplicationStatus } from "../entities/application";
 
 import { RepositoryTokens } from "../../lib/injection-tokens/repository-tokens";
 import { ApplicationRepositoryPort } from "../repository/application.repository.port";
-import { createApplicationWorkflowEngine } from "../workflow/first_workflow/engine";
 import { inject } from "../../lib/strict-inject";
 import ApplicationProviderPort from "./application.provider.port";
 import { nodeIdToScreen, screenToNodeId } from "../entities/application-screen";
 
+import { WorkflowRegistry } from "../workflow/workflows-registry";
+
+const FIRST_WORKFLOW_ID = "first_workflow"; // definelty replace this since we can get theworkflowId in the applicaiton itself
 @Provider
 export class ApplicationProviderAdapter implements ApplicationProviderPort {
-  private engine: WorkflowEngine;
-
   constructor(
     @inject(RepositoryTokens.ApplicationRepository)
     private applicationRepositoryPort: ApplicationRepositoryPort,
-  ) {
-    this.engine = createApplicationWorkflowEngine({
-      applicationRepository: this.applicationRepositoryPort,
-    });
-  }
+    private workflowRegistry: WorkflowRegistry,
+  ) {}
 
   async createApplication(userId: string): Promise<ApplicationScreen> {
-    const state = await this.engine.run();
+    const initialState: WorkflowState =
+      this.workflowRegistry.createInitialState();
 
-    const application = await this.applicationRepositoryPort.create({
+    const state = await this.workflowRegistry.engine.run(
+      FIRST_WORKFLOW_ID,
+      initialState,
+    );
+
+    await this.applicationRepositoryPort.create({
       userId,
       workflowContext: {
         context: state.context,
@@ -37,18 +41,6 @@ export class ApplicationProviderAdapter implements ApplicationProviderPort {
       },
       status: ApplicationStatus.IN_PROGRESS,
     });
-
-    this.engine = createApplicationWorkflowEngine(
-      {
-        applicationRepository: this.applicationRepositoryPort,
-      },
-      {
-        context: application.workflowContext.context,
-        currentNodeId: application.workflowContext.currentNodeId,
-        results: [],
-        completed: false,
-      },
-    );
 
     return getCurrentScreen(nodeIdToScreen, state);
   }
@@ -64,7 +56,16 @@ export class ApplicationProviderAdapter implements ApplicationProviderPort {
       throw new Error("context screen is undefined, cannot be undefined");
     }
 
-    const state = await this.engine.storeCollectedData(data);
+    const state = await this.workflowRegistry.engine.storeCollectedData(
+      FIRST_WORKFLOW_ID,
+      {
+        context: application.workflowContext.context,
+        currentNodeId: application.workflowContext.currentNodeId,
+        results: [],
+        completed: false,
+      },
+      data,
+    );
 
     await this.applicationRepositoryPort.updateOne(applicationId, {
       workflowContext: {

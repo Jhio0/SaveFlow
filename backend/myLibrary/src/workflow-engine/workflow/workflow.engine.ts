@@ -12,43 +12,74 @@ import {
 } from "../types/workflow.types";
 import { Workflow } from "./workflow";
 
+// Bundles the workflow + its in-flight state, since almost every
+// private helper below needs both together.
+interface ExecutionContext {
+  workflow: Workflow;
+  state: WorkflowState;
+}
+
+// The (nodeId, context, type) triple that used to be passed around
+// as three separate params every time we recorded a node's result.
+interface NodeResolution {
+  nodeId: string;
+  context: WorkflowContext;
+  type: NodeResultType;
+}
+
 //plan to make this into a single ton instead
 export class WorkflowEngine {
-  constructor(
-    private workflow: Workflow, // the workflow containing nodes and edges
-    private state: WorkflowState, // current state, including context and current node
-  ) {}
+  private workflows = new Map<string, Workflow>();
+
+  registerWorkflow(workflowId: string, workflow: Workflow): void {
+    this.workflows.set(workflowId, workflow);
+  }
+
+  getWorkflow(workflowId: string): Workflow {
+    const workflow = this.workflows.get(workflowId);
+
+    if (!workflow) {
+      throw new Error("No Workflow exist for that WorkflowId");
+    }
+
+    return workflow;
+  }
 
   // Main engine loop: runs nodes until workflow completes or hits an ASYNC node
-  async run(): Promise<WorkflowState> {
-    while (this.state.currentNodeId && !this.state.completed) {
-      const currentNode: GenericNode = this.workflow.getNode(
-        this.state.currentNodeId,
+  async run(workflowId: string, state: WorkflowState): Promise<WorkflowState> {
+    const ctx: ExecutionContext = {
+      workflow: this.getWorkflow(workflowId),
+      state,
+    };
+
+    while (ctx.state.currentNodeId && !ctx.state.completed) {
+      const currentNode: GenericNode = ctx.workflow.getNode(
+        ctx.state.currentNodeId,
       );
 
       switch (currentNode.type) {
         case NodeType.SYNC: {
           // Resolve SYNC node immediately and continue to next node
-          await this.runSyncNode(currentNode);
+          await this.runSyncNode(ctx, currentNode);
           break;
         }
 
         case NodeType.ASYNC: {
           // Execute ASYNC node and pause engine until data is stored
-          await this.runAsyncNode(currentNode);
-          return this.state; // pause engine
+          await this.runAsyncNode(ctx, currentNode);
+          return ctx.state; // pause engine
         }
 
         case NodeType.END: {
           // Mark workflow as completed
-          await this.applyNodeResult(
-            currentNode.id,
-            { currentNode: currentNode.id },
-            NodeResultType.ResolvedResult,
-          );
+          await this.applyNodeResult(ctx.state, {
+            nodeId: currentNode.id,
+            context: { currentNode: currentNode.id },
+            type: NodeResultType.ResolvedResult,
+          });
 
-          this.state.completed = true;
-          return this.state; // stop engine
+          ctx.state.completed = true;
+          return ctx.state; // stop engine
         }
 
         default:
@@ -56,59 +87,80 @@ export class WorkflowEngine {
       }
 
       // Move to next node based on current node's output pin
-      this.state.currentNodeId = await this.determineNextNode(currentNode);
+      ctx.state.currentNodeId = await this.determineNextNode(ctx, currentNode);
     }
 
-    return this.state; // workflow fully processed
+    return ctx.state; // workflow fully processed
   }
 
   // Apply the result of a node execution or resolution to the workflow state
   private async applyNodeResult(
-    nodeId: string,
-    context: WorkflowContext,
-    type: NodeResultType,
+    state: WorkflowState,
+    resolution: NodeResolution,
   ): Promise<void> {
-    const currentNode = this.state.currentNodeId;
+    const currentNode = state.currentNodeId;
 
     // Merge new context into the current state
     // 🔥 ALWAYS merge currentNodeId into context
     const mergedContext = this.computeLatestContext([
-      this.state.context,
-      context,
+      state.context,
+      resolution.context,
       { currentNode }, // ✅ enforce here
     ]);
 
-    this.state.context = mergedContext;
+    state.context = mergedContext;
 
-    this.state.results.push({
-      nodeId,
+    state.results.push({
+      nodeId: resolution.nodeId,
       result: mergedContext,
-      type,
+      type: resolution.type,
     });
   }
 
   // Run a synchronous node: resolve immediately and apply its result
-  private async runSyncNode(node: GenericNode): Promise<void> {
-    const context: WorkflowContext = await node.resolve(this.state.context);
-    await this.applyNodeResult(node.id, context, NodeResultType.ResolvedResult);
+  private async runSyncNode(
+    ctx: ExecutionContext,
+    node: GenericNode,
+  ): Promise<void> {
+    const context: WorkflowContext = await node.resolve(ctx.state.context);
+    await this.applyNodeResult(ctx.state, {
+      nodeId: node.id,
+      context,
+      type: NodeResultType.ResolvedResult,
+    });
   }
 
   // Run an asynchronous node: execute and store the result, engine will pause
-  private async runAsyncNode(node: GenericNode): Promise<void> {
+  private async runAsyncNode(
+    ctx: ExecutionContext,
+    node: GenericNode,
+  ): Promise<void> {
     if (!node.execute) {
       throw new Error(`Async node ${node.id} does not implement execute`);
     }
 
-    const result: WorkflowContext = await node.execute(this.state.context);
-    this.state.currentNodeId = node.id; // keep current node active
+    const result: WorkflowContext = await node.execute(ctx.state.context);
+    ctx.state.currentNodeId = node.id; // keep current node active
 
-    await this.applyNodeResult(node.id, result, NodeResultType.ExecutionResult);
+    await this.applyNodeResult(ctx.state, {
+      nodeId: node.id,
+      context: result,
+      type: NodeResultType.ExecutionResult,
+    });
   }
 
   // Store data from an ASYNC node and resume workflow execution
-  async storeCollectedData(payload: WorkflowContext): Promise<WorkflowState> {
-    const nodeId: string = this.state.currentNodeId!;
-    const node: GenericNode = this.workflow.getNode(nodeId);
+  async storeCollectedData(
+    workflowId: string,
+    state: WorkflowState,
+    payload: WorkflowContext,
+  ): Promise<WorkflowState> {
+    const ctx: ExecutionContext = {
+      workflow: this.getWorkflow(workflowId),
+      state,
+    };
+    const nodeId: string = state.currentNodeId!;
+    const node: GenericNode = ctx.workflow.getNode(nodeId);
 
     if (node.type !== NodeType.ASYNC) {
       throw new Error(`storeCollectedData can only be used for async nodes`);
@@ -117,21 +169,28 @@ export class WorkflowEngine {
     // Resolve node with provided payload
     const context: WorkflowContext = await node.resolve(payload);
 
-    await this.applyNodeResult(node.id, context, NodeResultType.ResolvedResult);
+    await this.applyNodeResult(ctx.state, {
+      nodeId: node.id,
+      context,
+      type: NodeResultType.ResolvedResult,
+    });
 
     // Move to next node and continue running
-    this.state.currentNodeId = await this.determineNextNode(node);
-    return this.run();
+    ctx.state.currentNodeId = await this.determineNextNode(ctx, node);
+    return this.run(workflowId, ctx.state);
   }
 
   // Determine the next node in the workflow based on output pin and edges
-  private async determineNextNode(node: GenericNode): Promise<string> {
+  private async determineNextNode(
+    ctx: ExecutionContext,
+    node: GenericNode,
+  ): Promise<string> {
     if (!node.determineOutputPin) {
       throw new Error("no outputs -> workflow path ends");
     }
 
-    const outputPin: string = await node.determineOutputPin(this.state.context);
-    const edge = this.workflow.findEdgeFromPin(node.id, outputPin);
+    const outputPin: string = await node.determineOutputPin(ctx.state.context);
+    const edge = ctx.workflow.findEdgeFromPin(node.id, outputPin);
 
     return edge?.targetNodeId;
   }

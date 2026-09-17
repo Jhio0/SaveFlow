@@ -7,20 +7,12 @@ import {
 } from "./nodes";
 import { registerEdges } from "./edges/edges";
 
-export function createApplicationWorkflowEngine(
-  deps: WorkflowDeps,
-  initialContext?: WorkflowIntialContext,
-): WorkflowEngine {
+export function buildFirstWorkflow(deps: WorkflowDeps): Workflow {
   const workflow = new Workflow();
   const nodes = createNodes(deps);
 
   registerNodes(workflow, nodes);
   registerEdges(workflow, nodes);
 
-  return new WorkflowEngine(workflow, {
-    context: initialContext?.context ?? {},
-    results: initialContext?.results ?? [],
-    completed: initialContext?.completed ?? false,
-    currentNodeId: initialContext?.currentNodeId ?? nodes.start.id, // ← uses initialState if provided
-  });
+  return workflow;
 }

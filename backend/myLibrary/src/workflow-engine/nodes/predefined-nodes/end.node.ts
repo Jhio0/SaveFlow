@@ -20,8 +20,6 @@ export class EndNode extends SyncNode<NoInput, EndNodeResolveOutput> {
   readonly resolveInputSchema = z.object({});
   readonly resolveOutputSchema = endResolveOutputSchema;
 
-  typendNodeResolveOutputSchema;
-
   constructor() {
     super(EndNode.NODE_ID);
 

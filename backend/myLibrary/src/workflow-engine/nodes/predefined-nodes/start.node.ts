@@ -8,12 +8,13 @@ import { NoInput, NoOutput } from "../../types/workflow.types";
 import { SyncNode } from "../sync.node";
 
 export class StartNode extends SyncNode<NoInput, NoOutput> {
+  static readonly NODE_ID = "start";
   // Start node can accept/return any input/output
   readonly resolveInputSchema = z.any();
   readonly resolveOutputSchema = z.any();
 
-  constructor(id: string = "start") {
-    super(id);
+  constructor() {
+    super(StartNode.NODE_ID);
     // Type and pins are inherited from SyncNode
   }
 
