@@ -1,3 +1,5 @@
+import { WorkflowContext } from "myLibrary";
+
 export enum ApplicationStatus {
   IN_PROGRESS = "IN_PROGRESS",
   COMPLETED = "COMPLETED",
@@ -11,6 +13,11 @@ export enum ApplicationScreen {
   InformationReviewScreen = "InformationReviewScreen",
   CompletedScreen = "CompletedScreen",
 }
+
+export type ApplicationPayload = {
+  screen: ApplicationScreen;
+  context: WorkflowContext;
+};
 
 export interface Application {
   id: string;

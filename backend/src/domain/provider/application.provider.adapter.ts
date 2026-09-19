@@ -5,14 +5,16 @@ import {
   WorkflowEngine,
   WorkflowState,
 } from "myLibrary";
-import { ApplicationScreen, ApplicationStatus } from "../entities/application";
+import {
+  ApplicationPayload,
+  ApplicationScreen,
+  ApplicationStatus,
+} from "../entities/application";
 
 import { RepositoryTokens } from "../../lib/injection-tokens/repository-tokens";
 import { ApplicationRepositoryPort } from "../repository/application.repository.port";
 import { inject } from "../../lib/strict-inject";
-import ApplicationProviderPort, {
-  SumbitScreenResponse,
-} from "./application.provider.port";
+import ApplicationProviderPort from "./application.provider.port";
 import { nodeIdToScreen, screenToNodeId } from "../entities/application-screen";
 
 import { WorkflowRegistry } from "../workflow/workflows-registry";
@@ -50,7 +52,7 @@ export class ApplicationProviderAdapter implements ApplicationProviderPort {
   async submitScreen<T extends WorkflowContext>(
     applicationId: string,
     data: T,
-  ): Promise<SumbitScreenResponse> {
+  ): Promise<ApplicationPayload> {
     const application =
       await this.applicationRepositoryPort.findById(applicationId);
 

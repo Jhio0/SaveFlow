@@ -1,7 +1,7 @@
 import { enumFromKeyStringThrow, GraphQLContext, Resolver } from "myLibrary";
 import { inject } from "../../../../../../lib/strict-inject";
 import { ProviderTokens } from "../../../../../../lib/injection-tokens/provider-tokens";
-import { CollectedExpenseDataProviderPort } from "../../../../../../domain/provider/collected-expense-data.provider.port";
+import { SubmitCollectedExpenseDataProviderPort } from "../../../../../../domain/provider/node-handlers/submit-collected-expense-data.provider.port";
 import { ApplicationPayload, ExpenseApplicationInput } from "../../../schema";
 import { ExpenseSource } from "../../../../../../domain/entities/collected-expsense-data";
 import { buildApplicationPayload } from "./mapper/application-payload.mapper";
@@ -9,8 +9,8 @@ import { buildApplicationPayload } from "./mapper/application-payload.mapper";
 @Resolver
 export class SubmitExpenseScreenMutationResolver {
   constructor(
-    @inject(ProviderTokens.CollectedExpenseDataProviderAdapter)
-    private collectedExpenseDataProviderPort: CollectedExpenseDataProviderPort,
+    @inject(ProviderTokens.SubmitCollectedExpenseDataProviderAdapter)
+    private submitCollectedExpenseDataProviderPort: SubmitCollectedExpenseDataProviderPort,
   ) {}
 
   async submitEssentialExpenseScreen(
@@ -20,7 +20,7 @@ export class SubmitExpenseScreenMutationResolver {
   ): Promise<ApplicationPayload> {
     const { items, applicationId } = args.input;
     const screen =
-      await this.collectedExpenseDataProviderPort.handleExpenseNode({
+      await this.submitCollectedExpenseDataProviderPort.handleExpenseNode({
         applicationId,
         items: items.map((item) => ({
           name: item.name,

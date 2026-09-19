@@ -1,9 +1,9 @@
 // ******** THIS FILE IS GENERATED, MANUAL CHANGES WILL BE OVERWRITTEN ******** //
 
 enum ProviderTokens {
-  CollectedExpenseDataProviderAdapter = 'CollectedExpenseDataProviderAdapter',
   ApplicationProviderAdapter = 'ApplicationProviderAdapter',
   SubmitIncomeNodeHandlerProviderAdapter = 'SubmitIncomeNodeHandlerProviderAdapter',
+  SubmitCollectedExpenseDataProviderAdapter = 'SubmitCollectedExpenseDataProviderAdapter',
   AuthProviderAdapter = 'AuthProviderAdapter',
 }
 

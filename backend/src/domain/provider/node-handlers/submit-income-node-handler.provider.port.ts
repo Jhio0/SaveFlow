@@ -1,5 +1,7 @@
-import { ApplicationScreen } from "../../entities/application";
-import { SumbitScreenResponse } from "../application.provider.port";
+import {
+  ApplicationPayload,
+  ApplicationScreen,
+} from "../../entities/application";
 
 export type handleIncomeNodeHandlerInput = {
   applicationId: string;
@@ -9,7 +11,7 @@ export type handleIncomeNodeHandlerInput = {
 interface SubmitIncomeNodeHandlerProviderPort {
   handleIncomeNodeHandler(
     input: handleIncomeNodeHandlerInput,
-  ): Promise<SumbitScreenResponse>;
+  ): Promise<ApplicationPayload>;
 }
 
 export default SubmitIncomeNodeHandlerProviderPort;
