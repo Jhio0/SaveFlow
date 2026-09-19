@@ -17,6 +17,7 @@ type Mutation {
   createApplication: ApplicationPayload!
   submitCollectIncomeScreen(input: CollectIncomeApplicationInput!): ApplicationPayload!
   submitEssentialExpenseScreen(input: ExpenseApplicationInput!): ApplicationPayload!
+  submitInformationReviewScreen(input: InformationReviewScreenInput!): ApplicationPayload!
 }
 
 type AuthPayload {
@@ -29,6 +30,7 @@ enum ApplicationScreen {
   EssentialExpenseScreen
   FinancialLoanExpenseScreen
   SubscriptionExpenseScreen
+  InformationReviewScreen
   CompletedScreen
 }
 
@@ -38,9 +40,44 @@ enum ExpenseSource {
   SUBSCRIPTION
 }
 
-type ApplicationPayload {
-  screen: ApplicationScreen
+type ExpenseItem {
+  name: String!
+  amount: Int!
+  source: ExpenseSource!
 }
+
+interface ScreenPayload {
+  screen: ApplicationScreen!
+}
+
+type CollectIncomePayload implements ScreenPayload {
+  screen: ApplicationScreen!
+}
+
+type EssentialExpensePayload implements ScreenPayload {
+  screen: ApplicationScreen!
+}
+
+type FinancialLoanExpensePayload implements ScreenPayload {
+  screen: ApplicationScreen!
+}
+
+type SubscriptionExpensePayload implements ScreenPayload {
+  screen: ApplicationScreen!
+}
+
+type InformationReviewPayload implements ScreenPayload {
+  screen: ApplicationScreen!
+  essentialItems: [ExpenseItem!]!
+  financialLoanItems: [ExpenseItem!]!
+  subscriptionItems: [ExpenseItem!]!
+}
+
+type CompletedPayload implements ScreenPayload {
+  screen: ApplicationScreen!
+}
+
+union ApplicationPayload = CollectIncomePayload | EssentialExpensePayload | FinancialLoanExpensePayload | SubscriptionExpensePayload | InformationReviewPayload | CompletedPayload
 
 input ExpenseItemsInput {
   name: String!
@@ -56,4 +93,8 @@ input CollectIncomeApplicationInput {
 input ExpenseApplicationInput {
   applicationId: ID!
   items: [ExpenseItemsInput!]!
+}
+
+input InformationReviewScreenInput {
+  applicationId: ID!
 }

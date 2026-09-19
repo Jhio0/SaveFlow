@@ -6,12 +6,11 @@ import { SubmitExpenseScreenMutationResolver } from "./mutation/submit-screens/s
 import { SubmitIncomeScreenMutationResolver } from "./mutation/submit-screens/submit-income-screen.mutation.resolver";
 import { UserAuthMutationResolver } from "./userAuth/userAuth.mutation.resolver";
 import { UserAuthQueryResolver } from "./userAuth/userAuth.query.resolver";
+import { ApplicationPayload } from "./mutation/submit-screens/mapper/application-payload.mapper";
 
 export function createResolvers() {
-  return buildResolvers({
-    Query: [
-      UserAuthQueryResolver,
-    ],
+  const resolvers = buildResolvers({
+    Query: [UserAuthQueryResolver],
     Mutation: [
       CreateApplicationMutationResolver,
       SubmitExpenseScreenMutationResolver,
@@ -19,4 +18,9 @@ export function createResolvers() {
       UserAuthMutationResolver,
     ],
   });
+
+  return {
+    ...resolvers,
+    ApplicationPayload, // manually attach the union's __resolveType
+  };
 }

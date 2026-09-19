@@ -1,11 +1,12 @@
 import z from "zod";
+import { ExpenseSource } from "../../../entities/collected-expsense-data";
 
 export const noInputSchema = z.object({});
 
 export const ExpenseItemSchema = z.object({
   name: z.string(),
   amount: z.number(),
-  source: z.string(),
+  source: z.enum(ExpenseSource),
 });
 
 export const ExpenseResolveInputSchema = z.object({

@@ -13,9 +13,50 @@ export const applicationSchema = gql`
     ${getEnumList(ExpenseSource)}
   }
 
-  type ApplicationPayload {
-    screen: ApplicationScreen
+  type ExpenseItem {
+    name: String!
+    amount: Int!
+    source: ExpenseSource!
   }
+
+  interface ScreenPayload {
+    screen: ApplicationScreen!
+  }
+
+  type CollectIncomePayload implements ScreenPayload {
+    screen: ApplicationScreen!
+  }
+
+  type EssentialExpensePayload implements ScreenPayload {
+    screen: ApplicationScreen!
+  }
+
+  type FinancialLoanExpensePayload implements ScreenPayload {
+    screen: ApplicationScreen!
+  }
+
+  type SubscriptionExpensePayload implements ScreenPayload {
+    screen: ApplicationScreen!
+  }
+
+  type InformationReviewPayload implements ScreenPayload {
+    screen: ApplicationScreen!
+    essentialItems: [ExpenseItem!]!
+    financialLoanItems: [ExpenseItem!]!
+    subscriptionItems: [ExpenseItem!]!
+  }
+
+  type CompletedPayload implements ScreenPayload {
+    screen: ApplicationScreen!
+  }
+
+  union ApplicationPayload =
+      CollectIncomePayload
+    | EssentialExpensePayload
+    | FinancialLoanExpensePayload
+    | SubscriptionExpensePayload
+    | InformationReviewPayload
+    | CompletedPayload
 
   input ExpenseItemsInput {
     name: String!
@@ -33,9 +74,14 @@ export const applicationSchema = gql`
     items: [ExpenseItemsInput!]!
   }
 
+  input InformationReviewScreenInput {
+    applicationId: ID!
+  }
+
   type Mutation {
     createApplication: ApplicationPayload!
     submitCollectIncomeScreen(input: CollectIncomeApplicationInput!): ApplicationPayload!
     submitEssentialExpenseScreen(input: ExpenseApplicationInput!): ApplicationPayload!
+    submitInformationReviewScreen(input: InformationReviewScreenInput!): ApplicationPayload!
   }
 `;

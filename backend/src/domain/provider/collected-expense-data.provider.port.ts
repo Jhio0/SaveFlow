@@ -1,5 +1,6 @@
 import { ApplicationScreen } from "../entities/application";
 import { ExpenseItems } from "../entities/collected-expsense-data";
+import { SumbitScreenResponse } from "./application.provider.port";
 
 export type handleExpenseNodeInput = {
   applicationId: string;
@@ -7,5 +8,7 @@ export type handleExpenseNodeInput = {
 };
 
 export interface CollectedExpenseDataProviderPort {
-  handleExpenseNode(input: handleExpenseNodeInput): Promise<ApplicationScreen>;
+  handleExpenseNode(
+    input: handleExpenseNodeInput,
+  ): Promise<SumbitScreenResponse>;
 }

@@ -1,5 +1,4 @@
 import { inject } from "tsyringe";
-import ApplicationProviderPort from "../../../../../../domain/provider/application.provider.port";
 import { ProviderTokens } from "../../../../../../lib/injection-tokens/provider-tokens";
 import { GraphQLContext, Resolver } from "myLibrary";
 import {
@@ -7,7 +6,7 @@ import {
   CollectIncomeApplicationInput,
 } from "../../../schema";
 import SubmitIncomeNodeHandlerProviderPort from "../../../../../../domain/provider/node-handlers/submit-income-node-handler.provider.port";
-import { mapDomainToSchemaScreen } from "./screen-mapper";
+import { buildApplicationPayload } from "./mapper/application-payload.mapper";
 
 @Resolver
 export class SubmitIncomeScreenMutationResolver {
@@ -29,6 +28,6 @@ export class SubmitIncomeScreenMutationResolver {
 
     console.log(screen);
 
-    return { screen: mapDomainToSchemaScreen(screen) };
+    return buildApplicationPayload(screen);
   }
 }

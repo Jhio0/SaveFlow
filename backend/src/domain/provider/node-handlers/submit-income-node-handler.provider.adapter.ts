@@ -2,7 +2,9 @@ import { Provider } from "myLibrary";
 import { ProviderTokens } from "../../../lib/injection-tokens/provider-tokens";
 import { inject } from "../../../lib/strict-inject";
 
-import ApplicationProviderPort from "../application.provider.port";
+import ApplicationProviderPort, {
+  SumbitScreenResponse,
+} from "../application.provider.port";
 import SubmitIncomeNodeHandlerProviderPort, {
   handleIncomeNodeHandlerInput,
 } from "./submit-income-node-handler.provider.port";
@@ -18,7 +20,7 @@ export class SubmitIncomeNodeHandlerProviderAdapter implements SubmitIncomeNodeH
 
   async handleIncomeNodeHandler(
     input: handleIncomeNodeHandlerInput,
-  ): Promise<ApplicationScreen> {
+  ): Promise<SumbitScreenResponse> {
     const screen =
       await this.applicationProviderPort.submitScreen<CollectIncomeResolveInput>(
         input.applicationId,

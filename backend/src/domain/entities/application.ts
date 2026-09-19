@@ -8,6 +8,7 @@ export enum ApplicationScreen {
   EssentialExpenseScreen = "EssentialExpenseScreen",
   FinancialLoanExpenseScreen = "FinancialLoanExpenseScreen",
   SubscriptionExpenseScreen = "SubscriptionExpenseScreen",
+  InformationReviewScreen = "InformationReviewScreen",
   CompletedScreen = "CompletedScreen",
 }
 

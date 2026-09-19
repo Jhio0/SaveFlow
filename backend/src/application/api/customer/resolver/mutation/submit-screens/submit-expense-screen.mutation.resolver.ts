@@ -3,8 +3,8 @@ import { inject } from "../../../../../../lib/strict-inject";
 import { ProviderTokens } from "../../../../../../lib/injection-tokens/provider-tokens";
 import { CollectedExpenseDataProviderPort } from "../../../../../../domain/provider/collected-expense-data.provider.port";
 import { ApplicationPayload, ExpenseApplicationInput } from "../../../schema";
-import { mapDomainToSchemaScreen } from "./screen-mapper";
 import { ExpenseSource } from "../../../../../../domain/entities/collected-expsense-data";
+import { buildApplicationPayload } from "./mapper/application-payload.mapper";
 
 @Resolver
 export class SubmitExpenseScreenMutationResolver {
@@ -29,6 +29,6 @@ export class SubmitExpenseScreenMutationResolver {
         })),
       });
 
-    return { screen: mapDomainToSchemaScreen(screen) };
+    return buildApplicationPayload(screen);
   }
 }

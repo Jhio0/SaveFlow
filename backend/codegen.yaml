@@ -9,4 +9,5 @@ generates:
       scalars:
         ID: string
       namingConvention:
-      typeNames: keep
+        typeNames: keep
+        enumValues: keep

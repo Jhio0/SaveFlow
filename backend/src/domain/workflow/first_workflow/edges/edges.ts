@@ -33,6 +33,13 @@ export function registerEdges(workflow: Workflow, nodes: WorkflowNodes): void {
   workflow.addEdge({
     sourceNodeId: nodes.subscriptionExpense.id,
     sourcePinId: "outputNavigationPin",
+    targetNodeId: nodes.informationReview.id,
+    targetPinId: "inputNavigationPin",
+  });
+
+  workflow.addEdge({
+    sourceNodeId: nodes.informationReview.id,
+    sourcePinId: "outputNavigationPin",
     targetNodeId: nodes.end.id,
     targetPinId: "inputNavigationPin",
   });

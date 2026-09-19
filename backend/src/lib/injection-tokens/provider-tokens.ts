@@ -3,8 +3,8 @@
 enum ProviderTokens {
   CollectedExpenseDataProviderAdapter = 'CollectedExpenseDataProviderAdapter',
   ApplicationProviderAdapter = 'ApplicationProviderAdapter',
-  AuthProviderAdapter = 'AuthProviderAdapter',
   SubmitIncomeNodeHandlerProviderAdapter = 'SubmitIncomeNodeHandlerProviderAdapter',
+  AuthProviderAdapter = 'AuthProviderAdapter',
 }
 
 type ProviderTokensType = keyof typeof ProviderTokens;
