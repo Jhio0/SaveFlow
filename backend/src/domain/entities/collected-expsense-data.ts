@@ -1,6 +1,7 @@
 export enum ExpenseSource {
   ESSENTIALS = "ESSENTIALS",
   FINANCIAL_LOAN = "FINANCIAL_LOAN",
+  SUBSCRIPTION = "SUBSCRIPTION",
 }
 
 export type ExpenseItems = {

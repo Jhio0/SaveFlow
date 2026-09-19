@@ -4,6 +4,7 @@ import { ApplicationRepositoryPort } from "../../../repository/application.repos
 import { CollectIncomeNode } from "./collect-income.node";
 import { EssentialExpenseNode } from "./essential-expense-node";
 import { FinancialLoanExpenseNode } from "./financial-loan-expense-node";
+import { SubscriptionExpenseNode } from "./subscription-expense-node";
 
 export type WorkflowDeps = {
   applicationRepository: ApplicationRepositoryPort;
@@ -21,6 +22,7 @@ export type WorkflowNodes = {
   collectIncome: CollectIncomeNode;
   essentialExpense: EssentialExpenseNode;
   financialLoanExpense: FinancialLoanExpenseNode;
+  subscriptionExpense: SubscriptionExpenseNode;
   end: EndNode;
 };
 
@@ -30,6 +32,7 @@ export function createNodes(deps: WorkflowDeps): WorkflowNodes {
     collectIncome: new CollectIncomeNode(),
     essentialExpense: new EssentialExpenseNode(),
     financialLoanExpense: new FinancialLoanExpenseNode(),
+    subscriptionExpense: new SubscriptionExpenseNode(),
     end: new EndNode(),
   };
 }
@@ -39,5 +42,6 @@ export function registerNodes(workflow: Workflow, nodes: WorkflowNodes): void {
   workflow.addNode(nodes.collectIncome);
   workflow.addNode(nodes.essentialExpense);
   workflow.addNode(nodes.financialLoanExpense);
+  workflow.addNode(nodes.subscriptionExpense);
   workflow.addNode(nodes.end);
 }
