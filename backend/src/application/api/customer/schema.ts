@@ -22,6 +22,7 @@ export type ApplicationPayload = {
 export enum ApplicationScreen {
   CompletedScreen = 'CompletedScreen',
   EssentialExpenseScreen = 'EssentialExpenseScreen',
+  FinancialLoanExpenseScreen = 'FinancialLoanExpenseScreen',
   IncomeDetailScreen = 'IncomeDetailScreen'
 }
 
@@ -48,7 +49,8 @@ export type ExpenseItemsInput = {
 };
 
 export enum ExpenseSource {
-  Essentials = 'ESSENTIALS'
+  Essentials = 'ESSENTIALS',
+  FinancialLoan = 'FINANCIAL_LOAN'
 }
 
 export type Mutation = {

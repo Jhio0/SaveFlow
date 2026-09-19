@@ -7,7 +7,7 @@ import { ApplicationScreen } from "../entities/application";
 import { inject } from "tsyringe";
 import { ProviderTokens } from "../../lib/injection-tokens/provider-tokens";
 import ApplicationProviderPort from "./application.provider.port";
-import { ExpenseResolveInput } from "../workflow/first_workflow/nodes/essential-expense-node";
+import { ExpenseResolveInput } from "../workflow/first_workflow/nodes/shared-node.type";
 
 @Provider
 export class CollectedExpenseDataProviderAdapter implements CollectedExpenseDataProviderPort {

@@ -27,11 +27,13 @@ type AuthPayload {
 enum ApplicationScreen {
   IncomeDetailScreen
   EssentialExpenseScreen
+  FinancialLoanExpenseScreen
   CompletedScreen
 }
 
 enum ExpenseSource {
   ESSENTIALS
+  FINANCIAL_LOAN
 }
 
 type ApplicationPayload {

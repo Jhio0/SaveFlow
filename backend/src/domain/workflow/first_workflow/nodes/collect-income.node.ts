@@ -1,7 +1,7 @@
 import { AsyncNode, injectable, NoInput, NoOutput } from "myLibrary";
 import z from "zod";
 import { ApplicationScreen } from "../../../entities/application";
-import { noInputSchema } from "./shared-node.schema";
+import { noInputSchema } from "./shared-node.type";
 
 const collectIncomeExecuteOutputSchema = z.object({
   screen: z.literal(ApplicationScreen.IncomeDetailScreen),
