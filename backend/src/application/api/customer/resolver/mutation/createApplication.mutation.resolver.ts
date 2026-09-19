@@ -2,7 +2,7 @@ import { GraphQLContext, Resolver } from "myLibrary";
 import { inject } from "../../../../../lib/strict-inject";
 import { ProviderTokens } from "../../../../../lib/injection-tokens/provider-tokens";
 import ApplicationProviderPort from "../../../../../domain/provider/application.provider.port";
-import { CreateApplicationPayload } from "../../schema";
+import { ApplicationPayload } from "../../schema";
 
 @Resolver
 export class CreateApplicationMutationResolver {
@@ -15,7 +15,7 @@ export class CreateApplicationMutationResolver {
     _: unknown,
     __: unknown,
     context: GraphQLContext,
-  ): Promise<CreateApplicationPayload> {
+  ): Promise<ApplicationPayload> {
     if (!context.currentUser) {
       throw new Error("No currentUser investigate Pls");
     }

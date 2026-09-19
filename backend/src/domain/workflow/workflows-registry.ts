@@ -21,6 +21,7 @@ export class WorkflowRegistry {
     private applicationRepositoryPort: ApplicationRepositoryPort,
   ) {
     this.engine = new WorkflowEngine();
+
     this.register(
       "first_workflow",
       buildFirstWorkflow({

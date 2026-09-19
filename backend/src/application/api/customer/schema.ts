@@ -14,6 +14,11 @@ export type Scalars = {
   Float: { input: number; output: number; }
 };
 
+export type ApplicationPayload = {
+  __typename?: 'ApplicationPayload';
+  screen?: Maybe<ApplicationScreen>;
+};
+
 export enum ApplicationScreen {
   CompletedScreen = 'CompletedScreen',
   EssentialExpenseScreen = 'EssentialExpenseScreen',
@@ -29,11 +34,6 @@ export type AuthPayload = {
 export type CollectIncomeApplicationInput = {
   applicationId: Scalars['ID']['input'];
   incomeAmount: Scalars['Int']['input'];
-};
-
-export type CreateApplicationPayload = {
-  __typename?: 'CreateApplicationPayload';
-  screen?: Maybe<ApplicationScreen>;
 };
 
 export type ExpenseApplicationInput = {
@@ -53,11 +53,11 @@ export enum ExpenseSource {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  createApplication: CreateApplicationPayload;
+  createApplication: ApplicationPayload;
   createUser: User;
   signup: AuthPayload;
-  submitCollectIncomeApplication: CreateApplicationPayload;
-  submitEssentialExpenseApplication: CreateApplicationPayload;
+  submitCollectIncomeScreen: ApplicationPayload;
+  submitEssentialExpenseScreen: ApplicationPayload;
 };
 
 
@@ -76,12 +76,12 @@ export type MutationSignupArgs = {
 };
 
 
-export type MutationSubmitCollectIncomeApplicationArgs = {
+export type MutationSubmitCollectIncomeScreenArgs = {
   input: CollectIncomeApplicationInput;
 };
 
 
-export type MutationSubmitEssentialExpenseApplicationArgs = {
+export type MutationSubmitEssentialExpenseScreenArgs = {
   input: ExpenseApplicationInput;
 };
 

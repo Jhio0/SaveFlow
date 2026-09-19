@@ -6,6 +6,7 @@ export enum ApplicationStatus {
 export enum ApplicationScreen {
   IncomeDetailScreen = "IncomeDetailScreen",
   EssentialExpenseScreen = "EssentialExpenseScreen",
+  // FinancialLoanExpenseScreen = "FinancialLoanExpenseScreen",
   CompletedScreen = "CompletedScreen",
 }
 

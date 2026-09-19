@@ -14,9 +14,9 @@ type Query {
 type Mutation {
   createUser(name: String!, dateOfBirth: String!, email: String!): User!
   signup(name: String!, email: String!, password: String!, dateOfBirth: String!): AuthPayload!
-  createApplication: CreateApplicationPayload!
-  submitCollectIncomeApplication(input: CollectIncomeApplicationInput!): CreateApplicationPayload!
-  submitEssentialExpenseApplication(input: ExpenseApplicationInput!): CreateApplicationPayload!
+  createApplication: ApplicationPayload!
+  submitCollectIncomeScreen(input: CollectIncomeApplicationInput!): ApplicationPayload!
+  submitEssentialExpenseScreen(input: ExpenseApplicationInput!): ApplicationPayload!
 }
 
 type AuthPayload {
@@ -34,7 +34,7 @@ enum ExpenseSource {
   ESSENTIALS
 }
 
-type CreateApplicationPayload {
+type ApplicationPayload {
   screen: ApplicationScreen
 }
 

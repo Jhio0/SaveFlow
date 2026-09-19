@@ -13,7 +13,7 @@ export const applicationSchema = gql`
     ${getEnumList(ExpenseSource)}
   }
 
-  type CreateApplicationPayload {
+  type ApplicationPayload {
     screen: ApplicationScreen
   }
 
@@ -34,8 +34,8 @@ export const applicationSchema = gql`
   }
 
   type Mutation {
-    createApplication: CreateApplicationPayload!
-    submitCollectIncomeApplication(input: CollectIncomeApplicationInput!): CreateApplicationPayload!
-    submitEssentialExpenseApplication(input: ExpenseApplicationInput!): CreateApplicationPayload!
+    createApplication: ApplicationPayload!
+    submitCollectIncomeScreen(input: CollectIncomeApplicationInput!): ApplicationPayload!
+    submitEssentialExpenseScreen(input: ExpenseApplicationInput!): ApplicationPayload!
   }
 `;

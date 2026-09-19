@@ -3,8 +3,8 @@ import ApplicationProviderPort from "../../../../../../domain/provider/applicati
 import { ProviderTokens } from "../../../../../../lib/injection-tokens/provider-tokens";
 import { GraphQLContext, Resolver } from "myLibrary";
 import {
+  ApplicationPayload,
   CollectIncomeApplicationInput,
-  CreateApplicationPayload,
 } from "../../../schema";
 import SubmitIncomeNodeHandlerProviderPort from "../../../../../../domain/provider/node-handlers/submit-income-node-handler.provider.port";
 import { mapDomainToSchemaScreen } from "./screen-mapper";
@@ -16,11 +16,11 @@ export class SubmitIncomeScreenMutationResolver {
     private submitIncomeNodeHandlerProvider: SubmitIncomeNodeHandlerProviderPort,
   ) {}
 
-  async submitCollectIncomeApplication(
+  async submitCollectIncomeScreen(
     _: unknown,
     args: { input: CollectIncomeApplicationInput },
     context: GraphQLContext,
-  ): Promise<CreateApplicationPayload> {
+  ): Promise<ApplicationPayload> {
     const screen =
       await this.submitIncomeNodeHandlerProvider.handleIncomeNodeHandler({
         applicationId: args.input.applicationId,
