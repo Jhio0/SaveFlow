@@ -76,6 +76,9 @@ export const applicationSchema = gql`
 
   input InformationReviewScreenInput {
     applicationId: ID!
+    essentialItems: [ExpenseItemsInput!]
+    financialLoanItems: [ExpenseItemsInput!]
+    subscriptionItems: [ExpenseItemsInput!]
   }
 
   type Mutation {

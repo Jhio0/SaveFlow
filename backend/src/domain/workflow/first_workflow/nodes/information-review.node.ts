@@ -4,6 +4,12 @@ import { AsyncNode, NoInput, NoOutput } from "myLibrary";
 import { injectable } from "tsyringe";
 import { ApplicationScreen } from "../../../entities/application";
 
+export const InformationReviewResolveInputSchema = z.object({
+  essentialItems: z.array(ExpenseItemSchema).optional(),
+  financialLoanItems: z.array(ExpenseItemSchema).optional(),
+  subscriptionItems: z.array(ExpenseItemSchema).optional(),
+});
+
 export const InformationReviewExecuteInputSchema = z.object({
   essentialItems: z.array(ExpenseItemSchema),
   financialLoanItems: z.array(ExpenseItemSchema),
@@ -17,6 +23,10 @@ export const InformationReviewExecuteOutputSchema = z.object({
   subscriptionItems: z.array(ExpenseItemSchema),
 });
 
+export type InformationReviewResolveInput = z.infer<
+  typeof InformationReviewResolveInputSchema
+>;
+
 export type InformationReviewExecuteInput = z.infer<
   typeof InformationReviewExecuteInputSchema
 >;
@@ -28,13 +38,13 @@ export type InformationReviewExecuteOutput = z.infer<
 export class InformationReviewNode extends AsyncNode<
   InformationReviewExecuteInput,
   InformationReviewExecuteOutput,
-  NoInput,
+  InformationReviewResolveInput,
   NoOutput
 > {
   static readonly NODE_ID = "InformationReview";
   readonly executeInputSchema = InformationReviewExecuteInputSchema;
   readonly executeOutputSchema = InformationReviewExecuteOutputSchema;
-  readonly resolveInputSchema = noInputSchema;
+  readonly resolveInputSchema = InformationReviewResolveInputSchema;
   readonly resolveOutputSchema = noInputSchema;
 
   constructor() {
@@ -52,7 +62,9 @@ export class InformationReviewNode extends AsyncNode<
     };
   }
 
-  async resolutionAction(_: NoInput): Promise<NoOutput> {
+  async resolutionAction(
+    input: InformationReviewResolveInput,
+  ): Promise<NoOutput> {
     console.log("Printing data:");
     return {};
   }

@@ -1,5 +1,3 @@
-// ******** THIS FILE IS GENERATED, MANUAL CHANGES WILL BE OVERWRITTEN ******** //
-
 import { buildResolvers } from "myLibrary";
 import { CreateApplicationMutationResolver } from "./mutation/createApplication.mutation.resolver";
 import { SubmitExpenseScreenMutationResolver } from "./mutation/submit-screens/submit-expense-screen.mutation.resolver";
@@ -7,6 +5,7 @@ import { SubmitIncomeScreenMutationResolver } from "./mutation/submit-screens/su
 import { UserAuthMutationResolver } from "./userAuth/userAuth.mutation.resolver";
 import { UserAuthQueryResolver } from "./userAuth/userAuth.query.resolver";
 import { ApplicationPayload } from "./mutation/submit-screens/mapper/application-payload.mapper";
+import { SubmitInformationReviewScreenMutationResolver } from "./mutation/submit-screens/submit-information-review.mutation.resolver";
 
 export function createResolvers() {
   const resolvers = buildResolvers({
@@ -15,6 +14,7 @@ export function createResolvers() {
       CreateApplicationMutationResolver,
       SubmitExpenseScreenMutationResolver,
       SubmitIncomeScreenMutationResolver,
+      SubmitInformationReviewScreenMutationResolver,
       UserAuthMutationResolver,
     ],
   });
