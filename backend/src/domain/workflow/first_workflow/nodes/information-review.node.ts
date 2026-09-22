@@ -3,8 +3,9 @@ import { ExpenseItemSchema, noInputSchema } from "./shared-node.type";
 import { AsyncNode, NoInput, NoOutput } from "myLibrary";
 import { injectable } from "tsyringe";
 import { ApplicationScreen } from "../../../entities/application";
+import { ExpenseItem } from "../../../../application/api/customer/schema";
 
-export const InformationReviewResolveInputSchema = z.object({
+export const InformationReviewResolveSchema = z.object({
   essentialItems: z.array(ExpenseItemSchema).optional(),
   financialLoanItems: z.array(ExpenseItemSchema).optional(),
   subscriptionItems: z.array(ExpenseItemSchema).optional(),
@@ -24,7 +25,11 @@ export const InformationReviewExecuteOutputSchema = z.object({
 });
 
 export type InformationReviewResolveInput = z.infer<
-  typeof InformationReviewResolveInputSchema
+  typeof InformationReviewResolveSchema
+>;
+
+export type InformationReviewResolveOutput = z.infer<
+  typeof InformationReviewResolveSchema
 >;
 
 export type InformationReviewExecuteInput = z.infer<
@@ -39,12 +44,12 @@ export class InformationReviewNode extends AsyncNode<
   InformationReviewExecuteInput,
   InformationReviewExecuteOutput,
   InformationReviewResolveInput,
-  NoOutput
+  InformationReviewResolveOutput
 > {
   static readonly NODE_ID = "InformationReview";
   readonly executeInputSchema = InformationReviewExecuteInputSchema;
   readonly executeOutputSchema = InformationReviewExecuteOutputSchema;
-  readonly resolveInputSchema = InformationReviewResolveInputSchema;
+  readonly resolveInputSchema = InformationReviewResolveSchema;
   readonly resolveOutputSchema = noInputSchema;
 
   constructor() {
@@ -64,9 +69,20 @@ export class InformationReviewNode extends AsyncNode<
 
   async resolutionAction(
     input: InformationReviewResolveInput,
-  ): Promise<NoOutput> {
-    console.log("Printing data:");
-    return {};
+  ): Promise<InformationReviewResolveOutput> {
+    return {
+      essentialItems: this.mapExpenseItems(input.essentialItems),
+      financialLoanItems: this.mapExpenseItems(input.financialLoanItems),
+      subscriptionItems: this.mapExpenseItems(input.subscriptionItems),
+    };
+  }
+
+  private mapExpenseItems(items?: ExpenseItem[]): ExpenseItem[] | undefined {
+    return items?.map((item) => ({
+      name: item.name,
+      amount: item.amount,
+      source: item.source,
+    }));
   }
 
   async determineOutputPin(context: NoInput) {

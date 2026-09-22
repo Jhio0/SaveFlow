@@ -1,8 +1,8 @@
 // ******** THIS FILE IS GENERATED, MANUAL CHANGES WILL BE OVERWRITTEN ******** //
 
 enum RepositoryTokens {
-  ApplicationRepository = 'ApplicationRepository',
   UserRepository = 'UserRepository',
+  ApplicationRepository = 'ApplicationRepository',
 }
 
 type RepositoryTokensType = keyof typeof RepositoryTokens;
