@@ -1,0 +1,11 @@
+mutation SubmitCollectIncomeScreen($input: CollectIncomeApplicationInput!) {
+  submitCollectIncomeScreen(input: $input) {
+    __typename
+    ... on CollectIncomePayload {
+      screen
+    }
+    ... on EssentialExpensePayload {
+      screen
+    }
+  }
+}

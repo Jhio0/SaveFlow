@@ -1,0 +1,120 @@
+type User {
+  id: ID!
+  name: String!
+  dateOfBirth: String!
+  email: String!
+}
+
+type Query {
+  me: User
+  login(email: String!, password: String!): AuthPayload!
+  user(id: ID!): User!
+}
+
+type Mutation {
+  createUser(name: String!, dateOfBirth: String!, email: String!): User!
+  signup(
+    name: String!
+    email: String!
+    password: String!
+    dateOfBirth: String!
+  ): AuthPayload!
+  createApplication: ApplicationPayload!
+  submitCollectIncomeScreen(
+    input: CollectIncomeApplicationInput!
+  ): ApplicationPayload!
+  submitEssentialExpenseScreen(
+    input: ExpenseApplicationInput!
+  ): ApplicationPayload!
+  submitInformationReviewScreen(
+    input: InformationReviewScreenInput!
+  ): ApplicationPayload!
+}
+
+type AuthPayload {
+  token: String!
+  user: User!
+}
+
+enum ApplicationScreen {
+  IncomeDetailScreen
+  EssentialExpenseScreen
+  FinancialLoanExpenseScreen
+  SubscriptionExpenseScreen
+  InformationReviewScreen
+  CompletedScreen
+}
+
+enum ExpenseSource {
+  ESSENTIALS
+  FINANCIAL_LOAN
+  SUBSCRIPTION
+}
+
+type ExpenseItem {
+  name: String!
+  amount: Int!
+  source: ExpenseSource!
+}
+
+interface ScreenPayload {
+  screen: ApplicationScreen!
+}
+
+type CollectIncomePayload implements ScreenPayload {
+  screen: ApplicationScreen!
+}
+
+type EssentialExpensePayload implements ScreenPayload {
+  screen: ApplicationScreen!
+}
+
+type FinancialLoanExpensePayload implements ScreenPayload {
+  screen: ApplicationScreen!
+}
+
+type SubscriptionExpensePayload implements ScreenPayload {
+  screen: ApplicationScreen!
+}
+
+type InformationReviewPayload implements ScreenPayload {
+  screen: ApplicationScreen!
+  essentialItems: [ExpenseItem!]!
+  financialLoanItems: [ExpenseItem!]!
+  subscriptionItems: [ExpenseItem!]!
+}
+
+type CompletedPayload implements ScreenPayload {
+  screen: ApplicationScreen!
+}
+
+union ApplicationPayload =
+  | CollectIncomePayload
+  | EssentialExpensePayload
+  | FinancialLoanExpensePayload
+  | SubscriptionExpensePayload
+  | InformationReviewPayload
+  | CompletedPayload
+
+input ExpenseItemsInput {
+  name: String!
+  amount: Int!
+  source: ExpenseSource!
+}
+
+input CollectIncomeApplicationInput {
+  applicationId: ID!
+  incomeAmount: Int!
+}
+
+input ExpenseApplicationInput {
+  applicationId: ID!
+  items: [ExpenseItemsInput!]!
+}
+
+input InformationReviewScreenInput {
+  applicationId: ID!
+  essentialItems: [ExpenseItemsInput!]
+  financialLoanItems: [ExpenseItemsInput!]
+  subscriptionItems: [ExpenseItemsInput!]
+}
