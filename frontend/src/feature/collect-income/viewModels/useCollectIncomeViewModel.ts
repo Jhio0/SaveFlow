@@ -1,13 +1,9 @@
 import { useMutation } from "@apollo/client/react";
-import { Href, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { useState } from "react";
 
+import { SCREEN_TO_ROUTE } from "@/feature/helper/screenRouteMapper";
 import { SubmitCollectIncomeScreenDocument } from "@/network/__generated__/graphql";
-
-const SCREEN_TO_ROUTE: Record<string, Href> = {
-  IncomeDetailScreen: "/screens/income-screen",
-  EssentialExpenseScreen: "/screens/essential-expense-screen",
-};
 
 export function useCollectIncomeViewModel() {
   const [incomeAmount, setIncomeAmount] = useState("");
@@ -25,7 +21,7 @@ export function useCollectIncomeViewModel() {
     const result = await submitIncome({
       variables: {
         input: {
-          applicationId: "6ab5949e7031aff2b1c8a57e",
+          applicationId: "6ab5cb40466505ea78f1f663",
           incomeAmount: Number(incomeAmount),
         },
       },

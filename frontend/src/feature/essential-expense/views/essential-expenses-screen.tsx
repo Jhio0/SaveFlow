@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { Keyboard, TouchableWithoutFeedback } from "react-native";
+import { useRef, useState } from "react";
+import { Keyboard, ScrollView, TouchableWithoutFeedback } from "react-native";
+import { Swipeable } from "react-native-gesture-handler";
 import { Button, Input, Text, XStack, YStack } from "tamagui";
 import { useCollectPresetExpensesViewModel } from "../viewModels/useCollectPresetExpensesViewModel";
 
@@ -9,11 +10,13 @@ export function EssentialExpensesScreen() {
     onToggleCategory,
     onAmountChange,
     onAddCustomCategory,
+    onRemoveCategory,
     submit,
   } = useCollectPresetExpensesViewModel();
 
   const [customName, setCustomName] = useState("");
   const [isAddingCustom, setIsAddingCustom] = useState(false);
+  const swipeableRefs = useRef<Record<string, Swipeable | null>>({});
 
   const hasAtLeastOneAmount = categories.some(
     (c) => c.enabled && c.amount !== null && c.amount > 0,
@@ -26,40 +29,73 @@ export function EssentialExpensesScreen() {
     setIsAddingCustom(false);
   };
 
+  const handleRemove = (id: string) => {
+    swipeableRefs.current[id]?.close();
+    onRemoveCategory(id);
+  };
+
+  const renderRightAction = (id: string) => (
+    <XStack
+      width={64}
+      items="center"
+      justify="center"
+      background="$red9"
+      style={{ borderRadius: 12 }}
+      ml="$2"
+      onPress={() => handleRemove(id)}
+    >
+      <Text color="white" fontSize="$6" fontWeight="700">
+        ✕
+      </Text>
+    </XStack>
+  );
+
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <YStack
-        flex={1}
-        background="$background"
-        px="$5"
-        pt="$8"
-        pb="$5"
-        justify="space-between"
+    <YStack
+      flex={1}
+      background="$background"
+      pt="$8"
+      pb="$5"
+      justify="space-between"
+    >
+      <YStack gap="$4" px="$5">
+        <Text
+          fontSize="$3"
+          fontWeight="600"
+          color="$gray10"
+          textTransform="uppercase"
+          letterSpacing={1}
+        >
+          Step 2 of 4
+        </Text>
+        <Text fontSize="$8" fontWeight="800" lineHeight="$8">
+          Which expenses apply to you?
+        </Text>
+      </YStack>
+
+      <ScrollView
+        style={{ flex: 1, marginTop: 16 }}
+        contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 16 }}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
       >
-        <YStack gap="$5">
-          <Text
-            fontSize="$3"
-            fontWeight="600"
-            color="$gray10"
-            textTransform="uppercase"
-            letterSpacing={1}
-          >
-            Step 2 of 4
-          </Text>
-
-          <Text fontSize="$8" fontWeight="800" lineHeight="$8">
-            Which expenses apply to you?
-          </Text>
-
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <YStack gap="$2">
             {categories.map((category) => (
-              <YStack key={category.id}>
+              <Swipeable
+                key={category.id}
+                ref={(ref) => {
+                  swipeableRefs.current[category.id] = ref;
+                }}
+                renderRightActions={() => renderRightAction(category.id)}
+                overshootRight={false}
+              >
                 <XStack
                   items="center"
                   justify="space-between"
                   py="$3"
                   px="$4"
-                  border="$5"
+                  style={{ borderRadius: 12 }}
                   background={
                     category.enabled ? "$backgroundStrong" : "transparent"
                   }
@@ -71,7 +107,7 @@ export function EssentialExpensesScreen() {
                     <YStack
                       width={18}
                       height={18}
-                      border="$2"
+                      style={{ borderRadius: 4 }}
                       borderWidth={category.enabled ? 0 : 1}
                       borderColor="$borderColor"
                       background={category.enabled ? "$blue9" : "transparent"}
@@ -108,54 +144,67 @@ export function EssentialExpensesScreen() {
                         }
                         fontSize="$4"
                         fontWeight="600"
-                        textAlign="right"
+                        style={{ textAlign: "right" }}
+                        color="$gray10"
                       />
                     </XStack>
                   )}
                 </XStack>
-              </YStack>
+              </Swipeable>
             ))}
-          </YStack>
 
-          {isAddingCustom ? (
-            <XStack gap="$2">
-              <Input
-                flex={1}
-                placeholder="Category name"
-                value={customName}
-                onChangeText={setCustomName}
-                onSubmitEditing={handleAddCustom}
-                autoFocus
-              />
-              <Button
-                onPress={handleAddCustom}
-                background="$blue9"
-                color="white"
+            {isAddingCustom ? (
+              <XStack gap="$2" mt="$2">
+                <Input
+                  flex={1}
+                  placeholder="Category name"
+                  value={customName}
+                  onChangeText={setCustomName}
+                  onSubmitEditing={handleAddCustom}
+                  autoFocus
+                />
+                <Button
+                  onPress={handleAddCustom}
+                  background="$blue9"
+                  color="white"
+                >
+                  Add
+                </Button>
+              </XStack>
+            ) : (
+              <XStack
+                items="center"
+                justify="center"
+                py="$3"
+                mt="$2"
+                borderWidth={1}
+                borderStyle="dashed"
+                borderColor="$borderColor"
+                style={{ borderRadius: 12 }}
+                onPress={() => setIsAddingCustom(true)}
               >
-                Add
-              </Button>
-            </XStack>
-          ) : (
-            <XStack
-              items="center"
-              justify="center"
-              py="$3"
-              borderWidth={1}
-              borderStyle="dashed"
-              borderColor="$borderColor"
-              border="$5"
-              onPress={() => setIsAddingCustom(true)}
-            >
-              <Text fontSize="$4" color="$gray10">
-                + Add custom category
-              </Text>
-            </XStack>
-          )}
-        </YStack>
+                <Text fontSize="$4" color="$gray10">
+                  + Add custom category
+                </Text>
+              </XStack>
+            )}
 
+            <Text
+              fontSize="$2"
+              color="$gray9"
+              mt="$3"
+              style={{ textAlign: "center" }}
+            >
+              Tip: swipe left on a category to remove it
+            </Text>
+          </YStack>
+        </TouchableWithoutFeedback>
+      </ScrollView>
+
+      <YStack px="$5">
         <Button
           size="$5"
-          border="$6"
+          style={{ borderRadius: 14 }}
           background="$blue9"
           color="white"
           fontWeight="700"
@@ -166,6 +215,6 @@ export function EssentialExpensesScreen() {
           Continue
         </Button>
       </YStack>
-    </TouchableWithoutFeedback>
+    </YStack>
   );
 }
