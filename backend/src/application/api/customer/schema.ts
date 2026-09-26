@@ -101,7 +101,7 @@ export type Mutation = {
   createUser: User;
   signup: AuthPayload;
   submitCollectIncomeScreen: ApplicationPayload;
-  submitEssentialExpenseScreen: ApplicationPayload;
+  submitExpenseScreen: ApplicationPayload;
   submitInformationReviewScreen: ApplicationPayload;
 };
 
@@ -126,7 +126,7 @@ export type MutationsubmitCollectIncomeScreenArgs = {
 };
 
 
-export type MutationsubmitEssentialExpenseScreenArgs = {
+export type MutationsubmitExpenseScreenArgs = {
   input: ExpenseApplicationInput;
 };
 

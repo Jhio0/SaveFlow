@@ -13,7 +13,7 @@ export class SubmitExpenseScreenMutationResolver {
     private submitCollectedExpenseDataProviderPort: SubmitCollectedExpenseDataProviderPort,
   ) {}
 
-  async submitEssentialExpenseScreen(
+  async submitExpenseScreen(
     _: unknown,
     args: { input: ExpenseApplicationInput },
     context: GraphQLContext,
