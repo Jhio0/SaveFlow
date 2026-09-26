@@ -15,6 +15,7 @@ export enum ApplicationScreen {
 }
 
 export type ApplicationPayload = {
+  applicationId: string;
   screen: ApplicationScreen;
   context: WorkflowContext;
 };

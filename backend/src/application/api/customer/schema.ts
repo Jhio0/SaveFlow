@@ -38,16 +38,19 @@ export type CollectIncomeApplicationInput = {
 
 export type CollectIncomePayload = ScreenPayload & {
   __typename?: 'CollectIncomePayload';
+  applicationId: Scalars['String']['output'];
   screen: ApplicationScreen;
 };
 
 export type CompletedPayload = ScreenPayload & {
   __typename?: 'CompletedPayload';
+  applicationId: Scalars['String']['output'];
   screen: ApplicationScreen;
 };
 
 export type EssentialExpensePayload = ScreenPayload & {
   __typename?: 'EssentialExpensePayload';
+  applicationId: Scalars['String']['output'];
   screen: ApplicationScreen;
 };
 
@@ -77,11 +80,13 @@ export enum ExpenseSource {
 
 export type FinancialLoanExpensePayload = ScreenPayload & {
   __typename?: 'FinancialLoanExpensePayload';
+  applicationId: Scalars['String']['output'];
   screen: ApplicationScreen;
 };
 
 export type InformationReviewPayload = ScreenPayload & {
   __typename?: 'InformationReviewPayload';
+  applicationId: Scalars['String']['output'];
   essentialItems: Array<ExpenseItem>;
   financialLoanItems: Array<ExpenseItem>;
   screen: ApplicationScreen;
@@ -154,11 +159,13 @@ export type QueryuserArgs = {
 };
 
 export type ScreenPayload = {
+  applicationId: Scalars['String']['output'];
   screen: ApplicationScreen;
 };
 
 export type SubscriptionExpensePayload = ScreenPayload & {
   __typename?: 'SubscriptionExpensePayload';
+  applicationId: Scalars['String']['output'];
   screen: ApplicationScreen;
 };
 

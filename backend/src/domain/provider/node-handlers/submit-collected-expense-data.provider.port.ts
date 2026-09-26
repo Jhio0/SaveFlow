@@ -1,7 +1,4 @@
-import {
-  ApplicationPayload,
-  ApplicationScreen,
-} from "../../entities/application";
+import { ApplicationPayload } from "../../entities/application";
 import { ExpenseItems } from "../../entities/collected-expsense-data";
 
 export type handleExpenseNodeInput = {

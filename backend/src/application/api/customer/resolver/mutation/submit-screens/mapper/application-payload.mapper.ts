@@ -39,15 +39,18 @@ export const ApplicationPayload = {
 
 function buildDefaultScreenPayload(
   schemaScreen: SchemaScreen,
+  applicationId: string,
 ): SchemaApplicationPayload {
-  return { screen: schemaScreen };
+  return { applicationId, screen: schemaScreen };
 }
 
 function buildInformationReviewPayload(
   schemaScreen: SchemaScreen,
   context: WorkflowContext,
+  applicationId: string,
 ): SchemaApplicationPayload {
   return {
+    applicationId,
     screen: schemaScreen,
     essentialItems: mapExpenseItems(context.essentialItems),
     financialLoanItems: mapExpenseItems(context.financialLoanItems),
@@ -59,24 +62,31 @@ function buildInformationReviewPayload(
 
 export type HandlerResult = {
   screen: DomainScreen;
+  applicationId: string;
   context: WorkflowContext;
 };
 
 export function buildApplicationPayload(
   result: HandlerResult,
 ): SchemaApplicationPayload {
-  const schemaScreen = mapDomainToSchemaScreen(result.screen);
+  const { screen, applicationId, context } = result;
+
+  const schemaScreen = mapDomainToSchemaScreen(screen);
 
   switch (result.screen) {
     case DomainScreen.InformationReviewScreen:
-      return buildInformationReviewPayload(schemaScreen, result.context);
+      return buildInformationReviewPayload(
+        schemaScreen,
+        context,
+        applicationId,
+      );
 
     case DomainScreen.EssentialExpenseScreen:
     case DomainScreen.FinancialLoanExpenseScreen:
     case DomainScreen.IncomeDetailScreen:
     case DomainScreen.SubscriptionExpenseScreen:
     case DomainScreen.CompletedScreen:
-      return buildDefaultScreenPayload(schemaScreen);
+      return buildDefaultScreenPayload(schemaScreen, applicationId);
 
     default:
       throw new Error(

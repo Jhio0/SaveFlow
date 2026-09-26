@@ -14,7 +14,9 @@ import {
 import { RepositoryTokens } from "../../lib/injection-tokens/repository-tokens";
 import { ApplicationRepositoryPort } from "../repository/application.repository.port";
 import { inject } from "../../lib/strict-inject";
-import ApplicationProviderPort from "./application.provider.port";
+import ApplicationProviderPort, {
+  CreateApplicationResponse,
+} from "./application.provider.port";
 import { nodeIdToScreen, screenToNodeId } from "../entities/application-screen";
 
 import { WorkflowRegistry } from "../workflow/workflows-registry";
@@ -28,7 +30,7 @@ export class ApplicationProviderAdapter implements ApplicationProviderPort {
     private workflowRegistry: WorkflowRegistry,
   ) {}
 
-  async createApplication(userId: string): Promise<ApplicationScreen> {
+  async createApplication(userId: string): Promise<CreateApplicationResponse> {
     const initialState: WorkflowState =
       this.workflowRegistry.createInitialState();
 
@@ -37,7 +39,7 @@ export class ApplicationProviderAdapter implements ApplicationProviderPort {
       initialState,
     );
 
-    await this.applicationRepositoryPort.create({
+    const application = await this.applicationRepositoryPort.create({
       userId,
       workflowContext: {
         context: state.context,
@@ -46,7 +48,12 @@ export class ApplicationProviderAdapter implements ApplicationProviderPort {
       status: ApplicationStatus.IN_PROGRESS,
     });
 
-    return getCurrentScreen(nodeIdToScreen, state);
+    const screen = getCurrentScreen(nodeIdToScreen, state);
+
+    return {
+      applicationId: application.id,
+      screen,
+    };
   }
 
   async submitScreen<T extends WorkflowContext>(
@@ -83,6 +90,7 @@ export class ApplicationProviderAdapter implements ApplicationProviderPort {
 
     if (state.completed) {
       return {
+        applicationId: application.id,
         screen: ApplicationScreen.CompletedScreen,
         context: state.context,
       };
@@ -91,6 +99,7 @@ export class ApplicationProviderAdapter implements ApplicationProviderPort {
     const screen = getCurrentScreen(nodeIdToScreen, state);
 
     return {
+      applicationId: application.id,
       screen,
       context: state.context,
     };

@@ -20,26 +20,32 @@ export const applicationSchema = gql`
   }
 
   interface ScreenPayload {
+    applicationId: String!
     screen: ApplicationScreen!
   }
 
   type CollectIncomePayload implements ScreenPayload {
+    applicationId: String!
     screen: ApplicationScreen!
   }
 
   type EssentialExpensePayload implements ScreenPayload {
+    applicationId: String!
     screen: ApplicationScreen!
   }
 
-  type FinancialLoanExpensePayload implements ScreenPayload {
+  type FinancialLoanExpensePayload implements ScreenPayload { 
+    applicationId: String!
     screen: ApplicationScreen!
   }
 
   type SubscriptionExpensePayload implements ScreenPayload {
+    applicationId: String!
     screen: ApplicationScreen!
   }
 
   type InformationReviewPayload implements ScreenPayload {
+    applicationId: String!
     screen: ApplicationScreen!
     essentialItems: [ExpenseItem!]!
     financialLoanItems: [ExpenseItem!]!
@@ -47,6 +53,7 @@ export const applicationSchema = gql`
   }
 
   type CompletedPayload implements ScreenPayload {
+    applicationId: String!
     screen: ApplicationScreen!
   }
 

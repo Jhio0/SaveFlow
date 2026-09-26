@@ -20,11 +20,8 @@ export class CreateApplicationMutationResolver {
       throw new Error("No currentUser investigate Pls");
     }
 
-    const applicationScreen =
-      await this.applicationProviderPort.createApplication(
-        context.currentUser.userId,
-      );
-
-    return { screen: applicationScreen };
+    return await this.applicationProviderPort.createApplication(
+      context.currentUser.userId,
+    );
   }
 }
