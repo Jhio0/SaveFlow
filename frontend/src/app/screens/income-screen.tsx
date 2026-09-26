@@ -1,5 +1,9 @@
+import { useLocalSearchParams } from "expo-router";
+
 import { CollectIncomeScreen } from "@/feature/collect-income/views/collect-income-screen";
 
 export default function IncomeRoute() {
-  return <CollectIncomeScreen />;
+  const { applicationId } = useLocalSearchParams<{ applicationId: string }>();
+
+  return <CollectIncomeScreen applicationId={applicationId} />;
 }

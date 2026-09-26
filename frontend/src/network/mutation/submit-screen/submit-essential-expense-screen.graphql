@@ -3,18 +3,22 @@ mutation SubmitExpenseScreen($input: ExpenseApplicationInput!) {
     __typename
 
     ... on EssentialExpensePayload {
+      applicationId
       screen
     }
 
     ... on FinancialLoanExpensePayload {
+      applicationId
       screen
     }
 
     ... on SubscriptionExpensePayload {
+      applicationId
       screen
     }
 
     ... on InformationReviewPayload {
+      applicationId
       screen
       essentialItems {
         name

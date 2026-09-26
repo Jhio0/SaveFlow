@@ -2,9 +2,15 @@ import { Keyboard, TouchableWithoutFeedback } from "react-native";
 import { Button, Input, Text, XStack, YStack } from "tamagui";
 import { useCollectIncomeViewModel } from "../viewModels/useCollectIncomeViewModel";
 
-export function CollectIncomeScreen() {
+type CollectIncomeScreenProps = {
+  applicationId: string;
+};
+
+export function CollectIncomeScreen({
+  applicationId,
+}: CollectIncomeScreenProps) {
   const { incomeAmount, onIncomeAmountChange, submit } =
-    useCollectIncomeViewModel();
+    useCollectIncomeViewModel(applicationId);
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -31,6 +37,7 @@ export function CollectIncomeScreen() {
             <Text fontSize="$9" fontWeight="800" lineHeight="$9">
               What's your income this month?
             </Text>
+
             <Text fontSize="$4" color="$gray10">
               Enter what you expect to bring in this month.
             </Text>
@@ -51,6 +58,7 @@ export function CollectIncomeScreen() {
             <Text fontSize="$9" fontWeight="700" color="$gray10">
               $
             </Text>
+
             <Input
               unstyled
               flex={1}
