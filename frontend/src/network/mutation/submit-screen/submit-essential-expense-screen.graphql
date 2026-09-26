@@ -1,5 +1,5 @@
-mutation SubmitEssentialExpenseScreen($input: ExpenseApplicationInput!) {
-  submitEssentialExpenseScreen(input: $input) {
+mutation SubmitExpenseScreen($input: ExpenseApplicationInput!) {
+  submitExpenseScreen(input: $input) {
     __typename
 
     ... on EssentialExpensePayload {
@@ -31,10 +31,6 @@ mutation SubmitEssentialExpenseScreen($input: ExpenseApplicationInput!) {
         amount
         source
       }
-    }
-
-    ... on CompletedPayload {
-      screen
     }
   }
 }

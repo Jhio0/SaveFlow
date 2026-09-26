@@ -1,13 +1,14 @@
 import { ExpensesScreen } from "@/feature/expenses-categories/view/expense-screen";
-import { useEssentialExpensesViewModel } from "@/feature/expenses-categories/viewModel/essential-expense/essentialExpenseViewModal";
+import { useFinancialLoanExpensesViewModel } from "@/feature/expenses-categories/viewModel/financial-expense/financialExpenseViewModal";
+
 import { SCREEN_TO_ROUTE } from "@/feature/helper/screenRouteMapper";
 import { router, useLocalSearchParams } from "expo-router";
 
-export default function EssentialExpensesRoute() {
-  const { applicationId } = useLocalSearchParams<{ applicationId: string }>();
-  console.log("applicationId on essential screen:", applicationId); // ← add this
-
-  const vm = useEssentialExpensesViewModel(applicationId);
+export default function FinancialLoanExpensesRoute() {
+  const { applicationId } = useLocalSearchParams<{
+    applicationId: "6ab7475c3f3bc3ff7d616948";
+  }>();
+  const vm = useFinancialLoanExpensesViewModel(applicationId);
 
   const handleSubmit = async () => {
     const nextScreen = await vm.submit();
@@ -25,11 +26,10 @@ export default function EssentialExpensesRoute() {
       console.log("nextScreen was falsy — not navigating");
     }
   };
-
   return (
     <ExpensesScreen
-      stepLabel="Step 2 of 4"
-      title="Which expenses apply to you?"
+      stepLabel="Step 4 of 4"
+      title="Any loan payments?"
       categories={vm.categories}
       onToggleCategory={vm.onToggleCategory}
       onAmountChange={vm.onAmountChange}

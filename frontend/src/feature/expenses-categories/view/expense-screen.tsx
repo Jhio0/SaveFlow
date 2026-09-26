@@ -2,25 +2,36 @@ import { useRef, useState } from "react";
 import { Keyboard, ScrollView, TouchableWithoutFeedback } from "react-native";
 import { Swipeable } from "react-native-gesture-handler";
 import { Button, Input, Text, XStack, YStack } from "tamagui";
-import { useCollectPresetExpensesViewModel } from "../viewModels/useCollectPresetExpensesViewModel";
+import { ExpenseCategory } from "../model/expense";
 
-export function EssentialExpensesScreen() {
-  const {
-    categories,
-    onToggleCategory,
-    onAmountChange,
-    onAddCustomCategory,
-    onRemoveCategory,
-    submit,
-  } = useCollectPresetExpensesViewModel();
+export interface ExpensesScreenProps {
+  stepLabel: string;
+  title: string;
+  categories: ExpenseCategory[];
+  onToggleCategory: (id: string) => void;
+  onAmountChange: (id: string, value: string) => void;
+  onAddCustomCategory: (name: string) => void;
+  onRemoveCategory: (id: string) => void;
+  onSubmit: () => void;
+  canSubmit: boolean;
+  submitLabel?: string;
+}
 
+export function ExpensesScreen({
+  stepLabel,
+  title,
+  categories,
+  onToggleCategory,
+  onAmountChange,
+  onAddCustomCategory,
+  onRemoveCategory,
+  onSubmit,
+  canSubmit,
+  submitLabel = "Continue",
+}: ExpensesScreenProps) {
   const [customName, setCustomName] = useState("");
   const [isAddingCustom, setIsAddingCustom] = useState(false);
   const swipeableRefs = useRef<Record<string, Swipeable | null>>({});
-
-  const hasAtLeastOneAmount = categories.some(
-    (c) => c.enabled && c.amount !== null && c.amount > 0,
-  );
 
   const handleAddCustom = () => {
     if (customName.trim().length === 0) return;
@@ -66,10 +77,10 @@ export function EssentialExpensesScreen() {
           textTransform="uppercase"
           letterSpacing={1}
         >
-          Step 2 of 4
+          {stepLabel}
         </Text>
         <Text fontSize="$8" fontWeight="800" lineHeight="$8">
-          Which expenses apply to you?
+          {title}
         </Text>
       </YStack>
 
@@ -208,11 +219,11 @@ export function EssentialExpensesScreen() {
           background="$blue9"
           color="white"
           fontWeight="700"
-          onPress={submit}
-          disabled={!hasAtLeastOneAmount}
-          opacity={!hasAtLeastOneAmount ? 0.5 : 1}
+          onPress={onSubmit}
+          disabled={!canSubmit}
+          opacity={!canSubmit ? 0.5 : 1}
         >
-          Continue
+          {submitLabel}
         </Button>
       </YStack>
     </YStack>
