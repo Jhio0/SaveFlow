@@ -1,19 +1,21 @@
 export interface SignupInput {
   name: string;
   email: string;
-  password: string; // plain text — we hash it before storing
+  password: string;
   dateOfBirth: string;
 }
 
 export interface LoginInput {
   email: string;
-  password: string; // plain text — we compare it against the stored hash
+  password: string;
 }
 
-// What we return to the client after successful auth.
-// The token is what the client stores and sends back with every request.
+export interface CurrentUser {
+  userId: string;
+}
+
 export interface AuthPayload {
-  token: string;
+  sessionId: string;
   user: {
     id: string;
     name: string;
@@ -22,9 +24,10 @@ export interface AuthPayload {
   };
 }
 
-interface AuthProviderPort {
+export interface AuthProviderPort {
   signup(input: SignupInput): Promise<AuthPayload>;
-  login(input: LoginInput): Promise<AuthPayload>;
-}
 
-export { AuthProviderPort };
+  login(input: LoginInput): Promise<AuthPayload>;
+
+  getCurrentUser(sessionId: string): Promise<CurrentUser | null>;
+}

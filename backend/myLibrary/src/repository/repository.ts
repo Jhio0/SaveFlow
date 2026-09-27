@@ -33,8 +33,8 @@ export function RepositoryFactory<
   D extends Document,
 >(globalOverrides?: RepositoryOverrideOptionsRaw): FactoryReturnType<T, D> {
   return function (
-    collectionName?: string,
-    schema?: Schema,
+    collectionName: string,
+    schema: Schema,
     localOverrides?: RepositoryOverrideOptions<D>,
   ) {
     // Create the factory function

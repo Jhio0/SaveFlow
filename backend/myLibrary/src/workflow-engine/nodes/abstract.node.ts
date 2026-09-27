@@ -23,8 +23,8 @@ export abstract class AbstractNode<
 > {
   id: string; // Unique node ID
   type: NodeType; // Node type (START, END, SYNC, ASYNC)
-  inputPins: string[]; // Node input pins
-  outputPins: string[]; // Node output pins
+  protected inputPins: string[] = []; // Node input pins
+  protected outputPins: string[] = []; // Node output pins
 
   // Optional schemas for validation with Zod
   abstract readonly executeInputSchema?: z.ZodType<TExecuteInput>;

@@ -27,7 +27,7 @@ export enum ApplicationScreen {
 
 export type AuthPayload = {
   __typename?: 'AuthPayload';
-  token: Scalars['String']['output'];
+  sessionId: Scalars['String']['output'];
   user: User;
 };
 

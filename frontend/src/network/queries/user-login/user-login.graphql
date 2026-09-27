@@ -1,6 +1,6 @@
 query Login($email: String!, $password: String!) {
   login(email: $email, password: $password) {
-    token
+    sessionId
     user {
       id
       name

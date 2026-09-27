@@ -24,6 +24,11 @@ export * from "./authorization/auth.context";
 export * from "./authorization/jws.util";
 
 // ------------------------
+// Redis
+// ------------------------
+export * from "./redis/redis.util";
+
+// ------------------------
 // Workflow Engine / Testing
 // ------------------------
 export * from "./workflow-engine";

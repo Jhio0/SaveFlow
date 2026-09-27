@@ -4,8 +4,7 @@ import * as SecureStore from "expo-secure-store";
 import { useState } from "react";
 
 import { LoginDocument } from "@/network/__generated__/graphql";
-
-const TOKEN_KEY = "auth_token";
+import { SESSION_KEY } from "@/network/graphqlClient";
 
 export function useLoginViewModel() {
   const router = useRouter();
@@ -29,11 +28,11 @@ export function useLoginViewModel() {
 
     const payload = result.data?.login;
 
-    if (!payload?.token) {
+    if (!payload?.sessionId) {
       return;
     }
 
-    await SecureStore.setItemAsync(TOKEN_KEY, payload.token);
+    await SecureStore.setItemAsync(SESSION_KEY, payload.sessionId);
 
     router.replace("/screens/create-application-screen");
   };

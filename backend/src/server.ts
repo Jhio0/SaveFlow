@@ -1,18 +1,24 @@
 import "reflect-metadata";
-import { ApolloServer } from "apollo-server";
 import { Mongoose } from "mongoose";
 
-import { createResolvers } from "./application/api/customer/resolver";
 import { getDependencyRegistry } from "./configuration/dependency-registry";
-import { buildContext } from "myLibrary";
+import { RedisService } from "myLibrary";
+import { RedisTokens } from "./lib/injection-tokens/redis-token";
+import { ApolloServer } from "apollo-server";
+import { createResolvers } from "./application/api/customer/resolver";
 import { typeDefs } from "./application/api/customer/schema/index";
+import { buildCustomerContext } from "./lib/buildCustomerContext";
 
-async function initializeDatabase(): Promise<Mongoose> {
+async function initializeRedis(): Promise<void> {
   const dependencyRegistry = getDependencyRegistry();
-  const mongooseInstance = dependencyRegistry.resolve(Mongoose);
-  await mongooseInstance.connect(mongooseInstance.connectionString);
-  console.log("✅ Database connected");
-  return mongooseInstance;
+
+  const redisService = dependencyRegistry.resolve<RedisService>(
+    RedisTokens.RedisService,
+  );
+
+  await redisService.connect();
+
+  console.log("✅ Redis connected");
 }
 
 function initializeApolloServer(): ApolloServer {
@@ -22,19 +28,25 @@ function initializeApolloServer(): ApolloServer {
     typeDefs,
     resolvers,
 
-    // context: Apollo calls this function for EVERY incoming request.
-    // The return value is passed as the third argument to all resolvers.
-    // This is where "middleware" happens in Apollo — not Express middleware,
-    // but the same concept: code that runs before your business logic.
-    context: buildContext,
+    // Apollo calls buildContext() for every request.
+    context: buildCustomerContext,
   });
 
   return server;
 }
 
+async function initializeDatabase(): Promise<Mongoose> {
+  const dependencyRegistry = getDependencyRegistry();
+  const mongooseInstance = dependencyRegistry.resolve(Mongoose);
+  await mongooseInstance.connect(mongooseInstance.connectionString);
+  console.log("✅ Database connected");
+  return mongooseInstance;
+}
+
 async function initializeServer(): Promise<void> {
   try {
     await initializeDatabase();
+    await initializeRedis();
     const server = initializeApolloServer();
     const { url } = await server.listen({ port: 5000 });
     console.log(`🚀 Server running at ${url}`);

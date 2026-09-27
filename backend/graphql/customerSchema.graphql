@@ -13,15 +13,24 @@ type Query {
 
 type Mutation {
   createUser(name: String!, dateOfBirth: String!, email: String!): User!
-  signup(name: String!, email: String!, password: String!, dateOfBirth: String!): AuthPayload!
+  signup(
+    name: String!
+    email: String!
+    password: String!
+    dateOfBirth: String!
+  ): AuthPayload!
   createApplication: ApplicationPayload!
-  submitCollectIncomeScreen(input: CollectIncomeApplicationInput!): ApplicationPayload!
+  submitCollectIncomeScreen(
+    input: CollectIncomeApplicationInput!
+  ): ApplicationPayload!
   submitExpenseScreen(input: ExpenseApplicationInput!): ApplicationPayload!
-  submitInformationReviewScreen(input: InformationReviewScreenInput!): ApplicationPayload!
+  submitInformationReviewScreen(
+    input: InformationReviewScreenInput!
+  ): ApplicationPayload!
 }
 
 type AuthPayload {
-  token: String!
+  sessionId: String!
   user: User!
 }
 
@@ -84,7 +93,13 @@ type CompletedPayload implements ScreenPayload {
   screen: ApplicationScreen!
 }
 
-union ApplicationPayload = CollectIncomePayload | EssentialExpensePayload | FinancialLoanExpensePayload | SubscriptionExpensePayload | InformationReviewPayload | CompletedPayload
+union ApplicationPayload =
+  | CollectIncomePayload
+  | EssentialExpensePayload
+  | FinancialLoanExpensePayload
+  | SubscriptionExpensePayload
+  | InformationReviewPayload
+  | CompletedPayload
 
 input ExpenseItemsInput {
   name: String!

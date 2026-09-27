@@ -1,66 +1,99 @@
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
+import { inject } from "tsyringe";
 
-import { Provider, signToken, TokenPayload } from "myLibrary";
+import { Provider, RedisService } from "myLibrary";
+
 import {
   AuthPayload,
   AuthProviderPort,
+  CurrentUser,
   LoginInput,
   SignupInput,
 } from "./auth.provider.port";
+
 import { RepositoryTokens } from "../../../lib/injection-tokens/repository-tokens";
-import { inject } from "tsyringe";
 import { UserRepositoryPort } from "../../repository/user.repository.port";
+import { RedisTokens } from "../../../lib/injection-tokens/redis-token";
 
 @Provider
 export class AuthProviderAdapter implements AuthProviderPort {
-  // The service needs a user repository to look up / create users.
-  // We receive it via the constructor (dependency injection).
   constructor(
     @inject(RepositoryTokens.UserRepository)
     private userRepositoryPort: UserRepositoryPort,
+    @inject(RedisTokens.RedisService)
+    private redisService: RedisService,
   ) {}
 
   /**
-   * SIGNUP
+   * Creates a Redis session for an authenticated user.
    *
-   * Flow:
-   * 1. Check if email already exists → error if it does
-   * 2. Hash the password
-   * 3. Save the new user with the hashed password
-   * 4. Generate a JWT token
-   * 5. Return token + user info
+   * Redis stores:
+   *
+   * session:<sessionId> -> { userId }
+   *
+   * The session automatically expires after 7 days.
    */
-  async signup(input: SignupInput): Promise<AuthPayload> {
-    // 1. Check if a user with this email already exists
-    // const existingUser = await this.userRepositoryPort.findByEmail(input.email);
-    // if (existingUser) {
-    //   throw new Error("A user with this email already exists.");
-    // }
+  private async createSession(userId: string): Promise<string> {
+    // Generate a random session ID.
+    const sessionId = crypto.randomUUID();
 
-    // 2. Hash the password
-    // bcrypt.hash(plainText, saltRounds)
-    // saltRounds = 12 means bcrypt runs the hashing algorithm 2^12 times.
-    // Higher = slower = harder to brute force. 10-12 is the standard.
+    // Store the user ID associated with this session.
+    await this.redisService.set(
+      `session:${sessionId}`,
+      { userId },
+      60 * 60 * 24 * 7, // 7 days
+    );
+
+    return sessionId;
+  }
+
+  /**
+   * Gets the authenticated user associated with a session.
+   *
+   * Redis is the source of truth for whether the session
+   * currently exists.
+   *
+   * Returns null when:
+   * - The session does not exist.
+   * - The session expired.
+   * - The session was deleted during logout.
+   */
+  async getCurrentUser(sessionId: string): Promise<CurrentUser | null> {
+    // Look up the session in Redis.
+    const session = await this.redisService.get<{
+      userId: string;
+    }>(`session:${sessionId}`);
+
+    // No session means the request is unauthenticated.
+    if (!session) {
+      return null;
+    }
+
+    // The session exists, so we know which user
+    // authenticated this request.
+    return {
+      userId: session.userId,
+    };
+  }
+
+  async signup(input: SignupInput): Promise<AuthPayload> {
+    // Hash the password before storing it in MongoDB.
     const hashedPassword = await bcrypt.hash(input.password, 12);
 
-    // 3. Create the user in the database with the HASHED password
     const user = await this.userRepositoryPort.create({
       name: input.name,
       email: input.email,
-      password: hashedPassword, // stored hash, never the plain text
+      password: hashedPassword,
       dateOfBirth: new Date(input.dateOfBirth),
     });
 
-    // 4. Create a JWT token for this user
-    const tokenPayload: TokenPayload = {
-      userId: user.id,
-      email: user.email,
-    };
-    const token = signToken(tokenPayload);
+    // Create a session after successful signup.
+    const sessionId = await this.createSession(user.id);
 
-    // 5. Return token and user info to the client
     return {
-      token,
+      sessionId,
+
       user: {
         id: user.id,
         name: user.name,
@@ -70,47 +103,32 @@ export class AuthProviderAdapter implements AuthProviderPort {
     };
   }
 
-  /**
-   * LOGIN
-   *
-   * Flow:
-   * 1. Find user by email → error if not found
-   * 2. Compare submitted password against stored hash → error if mismatch
-   * 3. Generate a JWT token
-   * 4. Return token + user info
-   */
   async login(input: LoginInput): Promise<AuthPayload> {
-    // 1. Look up the user by email
+    // Find the user in MongoDB.
     const user = await this.userRepositoryPort.findByEmail(input.email);
 
     if (!user) {
-      // Deliberately vague — don't tell attackers which part was wrong
       throw new Error("Invalid email or password.");
     }
 
-    // The user must have a password stored (they signed up with email/password)
     if (!user.password) {
       throw new Error("Invalid email or password.");
     }
 
-    // 2. bcrypt.compare(plainText, hash) → true if they match
-    // This is the magic: bcrypt hashes the plain text using the same salt
-    // that was embedded in the stored hash, then compares.
+    // Compare the plain-text password against
+    // the bcrypt hash stored in MongoDB.
     const isPasswordValid = await bcrypt.compare(input.password, user.password);
+
     if (!isPasswordValid) {
       throw new Error("Invalid email or password.");
     }
 
-    // 3. Generate token
-    const tokenPayload: TokenPayload = {
-      userId: user.id,
-      email: user.email,
-    };
-    const token = signToken(tokenPayload);
+    // Credentials are valid, so create a Redis session.
+    const sessionId = await this.createSession(user.id);
 
-    // 4. Return to client
     return {
-      token,
+      sessionId,
+
       user: {
         id: user.id,
         name: user.name,
