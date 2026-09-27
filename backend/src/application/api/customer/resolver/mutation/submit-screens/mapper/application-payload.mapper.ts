@@ -52,6 +52,7 @@ function buildInformationReviewPayload(
   return {
     applicationId,
     screen: schemaScreen,
+    incomeAmount: context.incomeAmount,
     essentialItems: mapExpenseItems(context.essentialItems),
     financialLoanItems: mapExpenseItems(context.financialLoanItems),
     subscriptionItems: mapExpenseItems(context.subscriptionItems),

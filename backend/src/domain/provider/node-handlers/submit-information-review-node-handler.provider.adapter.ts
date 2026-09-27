@@ -22,6 +22,7 @@ export class SubmitInformationReviewNodeHandlerAdapter implements SubmitInformat
     return await this.applicationProviderPort.submitScreen<InformationReviewResolveInput>(
       input.applicationId,
       {
+        incomeAmount: input.incomeAmount,
         essentialItems: input.essentialItems,
         financialLoanItems: input.financialLoanItems,
         subscriptionItems: input.subscriptionItems,

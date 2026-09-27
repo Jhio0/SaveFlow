@@ -35,6 +35,7 @@ export class SubmitInformationReviewScreenMutationResolver {
       await this.submitInformationReviewNodeHandlerPort.handleInformationReviewNode(
         {
           applicationId,
+          incomeAmount: Number(args.input.incomeAmount),
           essentialItems: this.#mapExpenseItems(essentialItems),
           financialLoanItems: this.#mapExpenseItems(financialLoanItems),
           subscriptionItems: this.#mapExpenseItems(subscriptionItems),

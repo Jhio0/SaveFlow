@@ -89,6 +89,7 @@ export type InformationReviewPayload = ScreenPayload & {
   applicationId: Scalars['String']['output'];
   essentialItems: Array<ExpenseItem>;
   financialLoanItems: Array<ExpenseItem>;
+  incomeAmount: Scalars['Int']['output'];
   screen: ApplicationScreen;
   subscriptionItems: Array<ExpenseItem>;
 };
@@ -97,6 +98,7 @@ export type InformationReviewScreenInput = {
   applicationId: Scalars['ID']['input'];
   essentialItems?: InputMaybe<Array<ExpenseItemsInput>>;
   financialLoanItems?: InputMaybe<Array<ExpenseItemsInput>>;
+  incomeAmount?: InputMaybe<Scalars['Int']['input']>;
   subscriptionItems?: InputMaybe<Array<ExpenseItemsInput>>;
 };
 

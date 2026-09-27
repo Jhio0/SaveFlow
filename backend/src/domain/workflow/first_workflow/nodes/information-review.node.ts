@@ -6,18 +6,21 @@ import { ApplicationScreen } from "../../../entities/application";
 import { ExpenseItem } from "../../../../application/api/customer/schema";
 
 export const InformationReviewResolveSchema = z.object({
+  incomeAmount: z.number().optional(),
   essentialItems: z.array(ExpenseItemSchema).optional(),
   financialLoanItems: z.array(ExpenseItemSchema).optional(),
   subscriptionItems: z.array(ExpenseItemSchema).optional(),
 });
 
 export const InformationReviewExecuteInputSchema = z.object({
+  incomeAmount: z.number(),
   essentialItems: z.array(ExpenseItemSchema),
   financialLoanItems: z.array(ExpenseItemSchema),
   subscriptionItems: z.array(ExpenseItemSchema),
 });
 
 export const InformationReviewExecuteOutputSchema = z.object({
+  incomeAmount: z.number().optional(),
   screen: z.literal("InformationReviewScreen"),
   essentialItems: z.array(ExpenseItemSchema),
   financialLoanItems: z.array(ExpenseItemSchema),
@@ -60,6 +63,7 @@ export class InformationReviewNode extends AsyncNode<
     input: InformationReviewExecuteInput,
   ): Promise<InformationReviewExecuteOutput> {
     return {
+      incomeAmount: input.incomeAmount,
       screen: ApplicationScreen.InformationReviewScreen,
       essentialItems: input.essentialItems,
       financialLoanItems: input.financialLoanItems,
@@ -71,6 +75,7 @@ export class InformationReviewNode extends AsyncNode<
     input: InformationReviewResolveInput,
   ): Promise<InformationReviewResolveOutput> {
     return {
+      incomeAmount: input.incomeAmount,
       essentialItems: this.mapExpenseItems(input.essentialItems),
       financialLoanItems: this.mapExpenseItems(input.financialLoanItems),
       subscriptionItems: this.mapExpenseItems(input.subscriptionItems),

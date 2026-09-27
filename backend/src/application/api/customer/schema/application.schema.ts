@@ -47,6 +47,7 @@ export const applicationSchema = gql`
   type InformationReviewPayload implements ScreenPayload {
     applicationId: String!
     screen: ApplicationScreen!
+    incomeAmount: Int!
     essentialItems: [ExpenseItem!]!
     financialLoanItems: [ExpenseItem!]!
     subscriptionItems: [ExpenseItem!]!
@@ -83,6 +84,7 @@ export const applicationSchema = gql`
 
   input InformationReviewScreenInput {
     applicationId: ID!
+    incomeAmount: Int
     essentialItems: [ExpenseItemsInput!]
     financialLoanItems: [ExpenseItemsInput!]
     subscriptionItems: [ExpenseItemsInput!]
