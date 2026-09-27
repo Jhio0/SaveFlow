@@ -20,6 +20,7 @@ mutation SubmitExpenseScreen($input: ExpenseApplicationInput!) {
     ... on InformationReviewPayload {
       applicationId
       screen
+      incomeAmount
       essentialItems {
         name
         amount

@@ -4,27 +4,37 @@ import { SCREEN_TO_ROUTE } from "@/feature/helper/screenRouteMapper";
 import { router, useLocalSearchParams } from "expo-router";
 
 export default function SubscriptionExpensesRoute() {
-  const { applicationId } = useLocalSearchParams<{
-    applicationId: "6ab7475c3f3bc3ff7d616948";
-  }>();
+  const { applicationId } = useLocalSearchParams<{ applicationId: string }>();
   const vm = useSubscriptionExpensesViewModel(applicationId);
 
   const handleSubmit = async () => {
-    const nextScreen = await vm.submit();
-    console.log("nextScreen:", nextScreen); // ← add this
-
-    if (nextScreen) {
-      const route = SCREEN_TO_ROUTE[nextScreen];
-      console.log("resolved route:", route); // ← add this
-
-      router.push({
-        pathname: route,
-        params: { applicationId },
-      });
-    } else {
-      console.log("nextScreen was falsy — not navigating");
+    const payload = await vm.submit();
+    if (!payload || !("screen" in payload) || !payload.screen) {
+      console.log("no screen on payload — not navigating");
+      return;
     }
+
+    const route = SCREEN_TO_ROUTE[payload.screen];
+
+    if (!route) {
+      console.log("no route");
+      return;
+    }
+
+    router.push({
+      pathname: route,
+      params: {
+        applicationId,
+        ...(payload.__typename === "InformationReviewPayload" && {
+          incomeAmount: payload.incomeAmount?.toString(),
+          essentialItems: JSON.stringify(payload.essentialItems ?? []),
+          financialLoanItems: JSON.stringify(payload.financialLoanItems ?? []),
+          subscriptionItems: JSON.stringify(payload.subscriptionItems ?? []),
+        }),
+      },
+    });
   };
+
   return (
     <ExpensesScreen
       stepLabel="Step 3 of 4"

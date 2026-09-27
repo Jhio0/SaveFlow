@@ -83,6 +83,7 @@ type SubscriptionExpensePayload implements ScreenPayload {
 type InformationReviewPayload implements ScreenPayload {
   applicationId: String!
   screen: ApplicationScreen!
+  incomeAmount: Int!
   essentialItems: [ExpenseItem!]!
   financialLoanItems: [ExpenseItem!]!
   subscriptionItems: [ExpenseItem!]!
@@ -119,6 +120,7 @@ input ExpenseApplicationInput {
 
 input InformationReviewScreenInput {
   applicationId: ID!
+  incomeAmount: Int
   essentialItems: [ExpenseItemsInput!]
   financialLoanItems: [ExpenseItemsInput!]
   subscriptionItems: [ExpenseItemsInput!]

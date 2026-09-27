@@ -1,4 +1,3 @@
-import { extractScreen } from "@/feature/helper/extractScreen";
 import {
   ExpenseSource,
   SubmitExpenseScreenDocument,
@@ -39,5 +38,5 @@ export const useSubscriptionExpensesViewModel = createExpenseViewModel({
   buildVariables: (applicationId, items) => ({
     input: { applicationId, items },
   }),
-  getPayload: (data) => extractScreen(data?.submitExpenseScreen),
+  getPayload: (data) => data?.submitExpenseScreen,
 });
