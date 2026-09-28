@@ -19,13 +19,14 @@ export function CollectIncomeScreen({
   financialLoanItems,
   subscriptionItems,
 }: CollectIncomeScreenProps) {
-  const vm = useCollectIncomeViewModel(applicationId, {
-    editing,
-    initialIncomeAmount,
-    essentialItems,
-    financialLoanItems,
-    subscriptionItems,
-  });
+  const { incomeAmount, submit, onIncomeAmountChange } =
+    useCollectIncomeViewModel(applicationId, {
+      editing,
+      initialIncomeAmount,
+      essentialItems,
+      financialLoanItems,
+      subscriptionItems,
+    });
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -79,8 +80,8 @@ export function CollectIncomeScreen({
               flex={1}
               placeholder="0"
               keyboardType="numeric"
-              value={vm.incomeAmount}
-              onChangeText={vm.onIncomeAmountChange}
+              value={incomeAmount}
+              onChangeText={onIncomeAmountChange}
               fontSize="$9"
               fontWeight="700"
               textAlign="center"
@@ -96,9 +97,9 @@ export function CollectIncomeScreen({
           background="$blue9"
           color="white"
           fontWeight="700"
-          onPress={vm.submit}
-          disabled={!vm.incomeAmount}
-          opacity={!vm.incomeAmount ? 0.5 : 1}
+          onPress={submit}
+          disabled={!incomeAmount}
+          opacity={!incomeAmount ? 0.5 : 1}
         >
           Continue
         </Button>

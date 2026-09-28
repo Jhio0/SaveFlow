@@ -1,5 +1,5 @@
 import { CollectIncomeScreen } from "@/feature/collect-income/views/collect-income-screen";
-import { useLocalSearchParams } from "expo-router";
+import { useApplicationEditParams } from "@/feature/helper/userApplicationEditParams";
 
 export default function IncomeRoute() {
   const {
@@ -9,14 +9,7 @@ export default function IncomeRoute() {
     essentialItems,
     financialLoanItems,
     subscriptionItems,
-  } = useLocalSearchParams<{
-    applicationId: string;
-    editing?: string;
-    incomeAmount?: string;
-    essentialItems?: string;
-    financialLoanItems?: string;
-    subscriptionItems?: string;
-  }>();
+  } = useApplicationEditParams();
 
   return (
     <CollectIncomeScreen
