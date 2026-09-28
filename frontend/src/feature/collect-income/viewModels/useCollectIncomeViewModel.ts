@@ -5,9 +5,29 @@ import { useState } from "react";
 import { SCREEN_TO_ROUTE } from "@/feature/helper/screenRouteMapper";
 import { SubmitCollectIncomeScreenDocument } from "@/network/__generated__/graphql";
 
-export function useCollectIncomeViewModel(applicationId: string) {
-  const [incomeAmount, setIncomeAmount] = useState("");
+interface IncomeViewModelOptions {
+  editing?: boolean;
+  initialIncomeAmount?: string;
+  essentialItems?: string;
+  financialLoanItems?: string;
+  subscriptionItems?: string;
+}
+
+export function useCollectIncomeViewModel(
+  applicationId: string,
+  options: IncomeViewModelOptions = {},
+) {
   const router = useRouter();
+
+  const {
+    editing = false,
+    initialIncomeAmount = "",
+    essentialItems,
+    financialLoanItems,
+    subscriptionItems,
+  } = options;
+
+  const [incomeAmount, setIncomeAmount] = useState(initialIncomeAmount ?? "");
 
   const [submitIncome, { loading, error }] = useMutation(
     SubmitCollectIncomeScreenDocument,
@@ -18,6 +38,22 @@ export function useCollectIncomeViewModel(applicationId: string) {
   };
 
   const submit = async () => {
+    // EDIT MODE
+    if (editing) {
+      router.replace({
+        pathname: "/screens/information-review-screen",
+        params: {
+          applicationId,
+          incomeAmount,
+          essentialItems,
+          financialLoanItems,
+          subscriptionItems,
+        },
+      });
+
+      return;
+    }
+
     const result = await submitIncome({
       variables: {
         input: {

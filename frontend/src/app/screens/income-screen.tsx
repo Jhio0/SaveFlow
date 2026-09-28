@@ -1,9 +1,31 @@
+import { CollectIncomeScreen } from "@/feature/collect-income/views/collect-income-screen";
 import { useLocalSearchParams } from "expo-router";
 
-import { CollectIncomeScreen } from "@/feature/collect-income/views/collect-income-screen";
-
 export default function IncomeRoute() {
-  const { applicationId } = useLocalSearchParams<{ applicationId: string }>();
+  const {
+    applicationId,
+    editing,
+    incomeAmount,
+    essentialItems,
+    financialLoanItems,
+    subscriptionItems,
+  } = useLocalSearchParams<{
+    applicationId: string;
+    editing?: string;
+    incomeAmount?: string;
+    essentialItems?: string;
+    financialLoanItems?: string;
+    subscriptionItems?: string;
+  }>();
 
-  return <CollectIncomeScreen applicationId={applicationId} />;
+  return (
+    <CollectIncomeScreen
+      applicationId={applicationId}
+      editing={editing === "true"}
+      initialIncomeAmount={incomeAmount}
+      essentialItems={essentialItems}
+      financialLoanItems={financialLoanItems}
+      subscriptionItems={subscriptionItems}
+    />
+  );
 }

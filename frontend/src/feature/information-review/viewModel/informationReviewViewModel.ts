@@ -7,10 +7,15 @@ import {
 import { useMutation } from "@apollo/client/react";
 import { useLocalSearchParams, useRouter } from "expo-router";
 
-type ExpenseItem = { name: string; amount: number; source: ExpenseSource };
+type ExpenseItem = {
+  name: string;
+  amount: number;
+  source: ExpenseSource;
+};
 
 export function useInformationReviewViewModel() {
   const router = useRouter();
+
   const params = useLocalSearchParams<{
     applicationId: string;
     incomeAmount?: string;
@@ -20,19 +25,35 @@ export function useInformationReviewViewModel() {
   }>();
 
   const applicationId = params.applicationId;
+
   const incomeAmount = params.incomeAmount ? Number(params.incomeAmount) : null;
+
   const essentialItems = parseJsonParam<ExpenseItem[]>(
     params.essentialItems,
     [],
-  );
+  ).map(({ name, amount, source }) => ({
+    name,
+    amount,
+    source,
+  }));
+
   const financialLoanItems = parseJsonParam<ExpenseItem[]>(
     params.financialLoanItems,
     [],
-  );
+  ).map(({ name, amount, source }) => ({
+    name,
+    amount,
+    source,
+  }));
+
   const subscriptionItems = parseJsonParam<ExpenseItem[]>(
     params.subscriptionItems,
     [],
-  );
+  ).map(({ name, amount, source }) => ({
+    name,
+    amount,
+    source,
+  }));
 
   const [submitReview, { loading, error }] = useMutation(
     SubmitInformationReviewScreenDocument,
@@ -45,6 +66,15 @@ export function useInformationReviewViewModel() {
 
   const moneyLeft = (incomeAmount ?? 0) - totalExpenses;
 
+  const editParams = {
+    applicationId,
+    editing: "true",
+    incomeAmount: incomeAmount?.toString(),
+    essentialItems: JSON.stringify(essentialItems),
+    financialLoanItems: JSON.stringify(financialLoanItems),
+    subscriptionItems: JSON.stringify(subscriptionItems),
+  };
+
   const editIncome = () => {
     router.push({
       pathname: "/screens/income-screen",
@@ -52,6 +82,9 @@ export function useInformationReviewViewModel() {
         applicationId,
         editing: "true",
         incomeAmount: incomeAmount?.toString(),
+        essentialItems: JSON.stringify(essentialItems),
+        financialLoanItems: JSON.stringify(financialLoanItems),
+        subscriptionItems: JSON.stringify(subscriptionItems),
       },
     });
   };
@@ -59,34 +92,21 @@ export function useInformationReviewViewModel() {
   const editEssentialExpenses = () => {
     router.push({
       pathname: "/screens/essential-expense-screen",
-      params: {
-        applicationId,
-        editing: "true",
-        essentialItems: JSON.stringify(essentialItems),
-      },
+      params: editParams,
     });
   };
 
-  // NEW
   const editFinancialLoanExpenses = () => {
     router.push({
       pathname: "/screens/financial-loan-expense-screen",
-      params: {
-        applicationId,
-        editing: "true",
-        financialLoanItems: JSON.stringify(financialLoanItems),
-      },
+      params: editParams,
     });
   };
 
   const editSubscriptions = () => {
     router.push({
       pathname: "/screens/subscription-expense-screen",
-      params: {
-        applicationId,
-        editing: "true",
-        subscriptionItems: JSON.stringify(subscriptionItems),
-      },
+      params: editParams,
     });
   };
 
@@ -98,9 +118,9 @@ export function useInformationReviewViewModel() {
         input: {
           applicationId,
           incomeAmount,
-          essentialItems,
-          financialLoanItems,
-          subscriptionItems,
+          essentialItems: essentialItems,
+          financialLoanItems: financialLoanItems,
+          subscriptionItems: subscriptionItems,
         },
       },
     });

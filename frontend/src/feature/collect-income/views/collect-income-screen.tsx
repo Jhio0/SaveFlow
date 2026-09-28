@@ -2,15 +2,30 @@ import { Keyboard, TouchableWithoutFeedback } from "react-native";
 import { Button, Input, Text, XStack, YStack } from "tamagui";
 import { useCollectIncomeViewModel } from "../viewModels/useCollectIncomeViewModel";
 
-type CollectIncomeScreenProps = {
+interface CollectIncomeScreenProps {
   applicationId: string;
-};
+  editing?: boolean;
+  initialIncomeAmount?: string;
+  essentialItems?: string;
+  financialLoanItems?: string;
+  subscriptionItems?: string;
+}
 
 export function CollectIncomeScreen({
   applicationId,
+  editing = false,
+  initialIncomeAmount,
+  essentialItems,
+  financialLoanItems,
+  subscriptionItems,
 }: CollectIncomeScreenProps) {
-  const { incomeAmount, onIncomeAmountChange, submit } =
-    useCollectIncomeViewModel(applicationId);
+  const vm = useCollectIncomeViewModel(applicationId, {
+    editing,
+    initialIncomeAmount,
+    essentialItems,
+    financialLoanItems,
+    subscriptionItems,
+  });
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -64,8 +79,8 @@ export function CollectIncomeScreen({
               flex={1}
               placeholder="0"
               keyboardType="numeric"
-              value={incomeAmount}
-              onChangeText={onIncomeAmountChange}
+              value={vm.incomeAmount}
+              onChangeText={vm.onIncomeAmountChange}
               fontSize="$9"
               fontWeight="700"
               textAlign="center"
@@ -81,9 +96,9 @@ export function CollectIncomeScreen({
           background="$blue9"
           color="white"
           fontWeight="700"
-          onPress={submit}
-          disabled={!incomeAmount}
-          opacity={!incomeAmount ? 0.5 : 1}
+          onPress={vm.submit}
+          disabled={!vm.incomeAmount}
+          opacity={!vm.incomeAmount ? 0.5 : 1}
         >
           Continue
         </Button>
