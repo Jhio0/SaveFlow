@@ -14,6 +14,10 @@ export function useLoginViewModel() {
 
   const [login, { loading, error }] = useLazyQuery(LoginDocument);
 
+  const forgotPassword = () => {
+    console.log("forgot password tapped"); // stub for now — wire up real flow later
+  };
+
   const submit = async () => {
     if (!email || !password) {
       return;
@@ -45,7 +49,7 @@ export function useLoginViewModel() {
     setPassword,
 
     submit,
-
+    forgotPassword,
     isLoggingIn: loading,
     loginError: error,
   };
