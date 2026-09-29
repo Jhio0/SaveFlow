@@ -6,6 +6,10 @@ import type { TypedDocumentNode } from "@graphql-typed-document-node/core";
 import { ExpenseCategory, ExpenseItem } from "../model/expense";
 import { useExpensesViewModel } from "./useExpenseViewModal";
 
+interface ExpenseViewModelOptions {
+  initialItems?: ExpenseItem[];
+}
+
 interface CreateExpenseViewModelParams<
   TData,
   TVariables extends OperationVariables,
@@ -29,24 +33,22 @@ export function createExpenseViewModel<
   buildVariables,
   getPayload,
 }: CreateExpenseViewModelParams<TData, TVariables, TPayload>) {
-  return function useExpenseScreenViewModel(applicationId: string) {
+  return function useExpenseScreenViewModel(
+    applicationId: string,
+    options: ExpenseViewModelOptions = {},
+  ) {
     const [submitMutation, { loading, error }] = useMutation(mutationDocument);
 
     const vm = useExpensesViewModel<TPayload>({
       defaultCategories,
       source,
+      initialItems: options.initialItems,
       onSubmit: async (items) => {
         const result = await submitMutation({
           variables: buildVariables(applicationId, items),
         });
 
-        console.log(
-          "expense mutation result:",
-          JSON.stringify(result, null, 2),
-        ); // ← add this
-
         const payload = getPayload(result.data);
-        console.log("extracted payload:", payload); // ← add this
 
         return payload;
       },

@@ -13,7 +13,8 @@ export function navigateFromPayload(
   applicationId: string,
   payload: any,
 ) {
-  const nextScreen = extractScreen(payload?.screen);
+  const nextScreen = extractScreen(payload);
+  console.log("NEXT SCREEN:", nextScreen);
 
   if (!nextScreen) return;
 

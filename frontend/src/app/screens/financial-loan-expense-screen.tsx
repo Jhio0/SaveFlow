@@ -1,34 +1,64 @@
+import { ExpenseItem } from "@/feature/expenses-categories/model/expense";
 import { ExpensesScreen } from "@/feature/expenses-categories/view/expense-screen";
 import { useFinancialLoanExpensesViewModel } from "@/feature/expenses-categories/viewModel/financial-expense/financialExpenseViewModal";
-
 import { SCREEN_TO_ROUTE } from "@/feature/helper/screenRouteMapper";
-import { router, useLocalSearchParams } from "expo-router";
+
+import { useApplicationEditParams } from "@/feature/helper/userApplicationEditParams";
+import { router } from "expo-router";
 
 export default function FinancialLoanExpensesRoute() {
-  const { applicationId } = useLocalSearchParams<{
-    applicationId: "6ab7475c3f3bc3ff7d616948";
-  }>();
-  const vm = useFinancialLoanExpensesViewModel(applicationId);
+  const {
+    applicationId,
+    editing,
+    incomeAmount,
+    essentialItems,
+    financialLoanItems,
+    subscriptionItems,
+  } = useApplicationEditParams();
+
+  const initialItems: ExpenseItem[] = financialLoanItems
+    ? JSON.parse(financialLoanItems)
+    : [];
+
+  const vm = useFinancialLoanExpensesViewModel(applicationId, { initialItems });
 
   const handleSubmit = async () => {
+    if (editing === "true") {
+      router.replace({
+        pathname: "/screens/information-review-screen",
+        params: {
+          applicationId,
+          editing: "true",
+          incomeAmount,
+          essentialItems,
+
+          financialLoanItems: JSON.stringify(vm.getItems()),
+
+          subscriptionItems,
+        },
+      });
+
+      return;
+    }
+
     const nextScreen = await vm.submit();
-    console.log("nextScreen:", nextScreen); // ← add this
 
     if (nextScreen) {
       const route = SCREEN_TO_ROUTE[nextScreen];
-      console.log("resolved route:", route); // ← add this
 
-      router.push({
-        pathname: route,
-        params: { applicationId },
-      });
-    } else {
-      console.log("nextScreen was falsy — not navigating");
+      if (route) {
+        router.push({
+          pathname: route,
+          params: {
+            applicationId,
+          },
+        });
+      }
     }
   };
   return (
     <ExpensesScreen
-      stepLabel="Step 4 of 4"
+      stepLabel="Step 3 of 4"
       title="Any loan payments?"
       categories={vm.categories}
       onToggleCategory={vm.onToggleCategory}

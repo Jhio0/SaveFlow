@@ -2,7 +2,7 @@ import { useMutation } from "@apollo/client/react";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 
-import { SCREEN_TO_ROUTE } from "@/feature/helper/screenRouteMapper";
+import { navigateFromPayload } from "@/feature/helper/buildNextRouteParam";
 import { SubmitCollectIncomeScreenDocument } from "@/network/__generated__/graphql";
 
 interface IncomeViewModelOptions {
@@ -63,20 +63,11 @@ export function useCollectIncomeViewModel(
       },
     });
 
-    const payload = result.data?.submitCollectIncomeScreen;
-
-    if (payload && "screen" in payload) {
-      const route = SCREEN_TO_ROUTE[payload.screen];
-
-      if (route) {
-        router.push({
-          pathname: route,
-          params: {
-            applicationId: payload.applicationId,
-          },
-        });
-      }
-    }
+    navigateFromPayload(
+      router,
+      applicationId,
+      result.data?.submitCollectIncomeScreen,
+    );
   };
 
   return {

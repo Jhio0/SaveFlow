@@ -78,14 +78,7 @@ export function useInformationReviewViewModel() {
   const editIncome = () => {
     router.push({
       pathname: "/screens/income-screen",
-      params: {
-        applicationId,
-        editing: "true",
-        incomeAmount: incomeAmount?.toString(),
-        essentialItems: JSON.stringify(essentialItems),
-        financialLoanItems: JSON.stringify(financialLoanItems),
-        subscriptionItems: JSON.stringify(subscriptionItems),
-      },
+      params: editParams,
     });
   };
 
