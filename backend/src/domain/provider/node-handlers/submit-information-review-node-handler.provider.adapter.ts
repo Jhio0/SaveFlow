@@ -19,9 +19,10 @@ export class SubmitInformationReviewNodeHandlerAdapter implements SubmitInformat
   async handleInformationReviewNode(
     input: HandleInformationReviewNodeInput,
   ): Promise<ApplicationPayload> {
-    return await this.applicationProviderPort.submitScreen<InformationReviewResolveInput>(
+    return await this.applicationProviderPort.submitScreen(
       input.applicationId,
       {
+        applicationId: input.applicationId,
         incomeAmount: input.incomeAmount,
         essentialItems: input.essentialItems,
         financialLoanItems: input.financialLoanItems,

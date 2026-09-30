@@ -8,6 +8,7 @@ export const fakeApplication = (overrides = {}): Application => ({
   id: faker.string.uuid(),
   userId: faker.string.uuid(),
   workflowContext: {
+    id: faker.string.uuid(),
     context: { step: faker.number.int({ min: 1, max: 5 }) },
     currentNodeId: faker.string.uuid(),
   },

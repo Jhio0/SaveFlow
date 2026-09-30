@@ -167,7 +167,10 @@ export class WorkflowEngine {
     }
 
     // Resolve node with provided payload
-    const context: WorkflowContext = await node.resolve(payload);
+    const context = await node.resolve({
+      ...ctx.state.context,
+      ...payload,
+    });
 
     await this.applyNodeResult(ctx.state, {
       nodeId: node.id,

@@ -24,6 +24,7 @@ export interface Application {
   id: string;
   userId: string;
   workflowContext: {
+    id: string;
     context: any;
     currentNodeId: string;
   };

@@ -6,9 +6,11 @@ import { EssentialExpenseNode } from "./essential-expense-node";
 import { FinancialLoanExpenseNode } from "./financial-loan-expense-node";
 import { SubscriptionExpenseNode } from "./subscription-expense-node";
 import { InformationReviewNode } from "./information-review.node";
+import { CollectedExpenseRepositoryPort } from "../../../repository/collected-expense-data.repository.port";
 
 export type WorkflowDeps = {
   applicationRepository: ApplicationRepositoryPort;
+  collectedExpeneRepository: CollectedExpenseRepositoryPort;
 };
 
 export type WorkflowIntialContext = {
@@ -35,7 +37,9 @@ export function createNodes(deps: WorkflowDeps): WorkflowNodes {
     essentialExpense: new EssentialExpenseNode(),
     financialLoanExpense: new FinancialLoanExpenseNode(),
     subscriptionExpense: new SubscriptionExpenseNode(),
-    informationReview: new InformationReviewNode(),
+    informationReview: new InformationReviewNode(
+      deps.collectedExpeneRepository,
+    ),
     end: new EndNode(),
   };
 }

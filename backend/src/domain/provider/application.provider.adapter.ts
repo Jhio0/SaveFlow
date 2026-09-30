@@ -20,6 +20,7 @@ import ApplicationProviderPort, {
 import { nodeIdToScreen, screenToNodeId } from "../entities/application-screen";
 
 import { WorkflowRegistry } from "../workflow/workflows-registry";
+import { Types } from "mongoose";
 
 const FIRST_WORKFLOW_ID = "first_workflow"; // definelty replace this since we can get theworkflowId in the applicaiton itself
 @Provider
@@ -32,7 +33,7 @@ export class ApplicationProviderAdapter implements ApplicationProviderPort {
 
   async createApplication(userId: string): Promise<CreateApplicationResponse> {
     const initialState: WorkflowState =
-      this.workflowRegistry.createInitialState();
+      this.workflowRegistry.createInitialState({ userId });
 
     const state = await this.workflowRegistry.engine.run(
       FIRST_WORKFLOW_ID,
@@ -42,6 +43,7 @@ export class ApplicationProviderAdapter implements ApplicationProviderPort {
     const application = await this.applicationRepositoryPort.create({
       userId,
       workflowContext: {
+        id: FIRST_WORKFLOW_ID,
         context: state.context,
         currentNodeId: state.currentNodeId,
       },
@@ -68,7 +70,7 @@ export class ApplicationProviderAdapter implements ApplicationProviderPort {
     }
 
     const state = await this.workflowRegistry.engine.storeCollectedData(
-      FIRST_WORKFLOW_ID,
+      application.workflowContext.id,
       {
         context: application.workflowContext.context,
         currentNodeId: application.workflowContext.currentNodeId,
@@ -80,6 +82,7 @@ export class ApplicationProviderAdapter implements ApplicationProviderPort {
 
     await this.applicationRepositoryPort.updateOne(applicationId, {
       workflowContext: {
+        id: application.workflowContext.id,
         context: state.context,
         currentNodeId: state.currentNodeId,
       },

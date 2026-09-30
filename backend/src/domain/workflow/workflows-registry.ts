@@ -10,6 +10,14 @@ import { ApplicationRepositoryPort } from "../repository/application.repository.
 import { inject } from "../../lib/strict-inject";
 import { RepositoryTokens } from "../../lib/injection-tokens/repository-tokens";
 import { buildFirstWorkflow } from "./first_workflow/engine";
+import z from "zod";
+import { CollectedExpenseRepositoryPort } from "../repository/collected-expense-data.repository.port";
+
+const initialContextSchema = z.object({
+  userId: z.string(),
+});
+
+export type InitialContext = z.infer<typeof initialContextSchema>;
 
 @injectable()
 export class WorkflowRegistry {
@@ -19,6 +27,8 @@ export class WorkflowRegistry {
   constructor(
     @inject(RepositoryTokens.ApplicationRepository)
     private applicationRepositoryPort: ApplicationRepositoryPort,
+    @inject(RepositoryTokens.CollectedExpenseDataRepository)
+    private collectedExpenseRepositoryPort: CollectedExpenseRepositoryPort,
   ) {
     this.engine = new WorkflowEngine();
 
@@ -26,6 +36,7 @@ export class WorkflowRegistry {
       "first_workflow",
       buildFirstWorkflow({
         applicationRepository: this.applicationRepositoryPort,
+        collectedExpeneRepository: this.collectedExpenseRepositoryPort,
       }),
     );
 
@@ -47,9 +58,11 @@ export class WorkflowRegistry {
   // Builds a fresh, valid initial state for starting a brand-new applicationwo
 
   // need to refactor this overall beacuse eac applicaiton in future mught have a different context overall and what we can do is based on the workflowId we can dteremine waht context it need's to build overall
-  createInitialState(): WorkflowState {
+  createInitialState(context: InitialContext): WorkflowState {
+    const parsedContext = initialContextSchema.parse(context);
+
     return {
-      context: {},
+      context: parsedContext,
       currentNodeId: StartNode.NODE_ID,
       results: [],
       completed: false,

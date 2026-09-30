@@ -5,6 +5,7 @@ import config from "config-dug";
 import { Mongoose } from "mongoose";
 import { UserRepositoryAdapter } from '../../infrastructure/repositories/user/user.repository.adapter';
 import { ApplicationRepositoryAdapter } from '../../infrastructure/repositories/application/application.repository.adapter';
+import { CollectedExpenseRepositoryAdapter } from '../../infrastructure/repositories/collected-expense-data/collected-expense-data.repository.adapter';
 
 function registerRepositorys(this: DependencyRegistry): void { this.container.register(Mongoose, {
     useFactory: instanceCachingFactory(() =>
@@ -13,6 +14,7 @@ function registerRepositorys(this: DependencyRegistry): void { this.container.re
   });
   UserRepositoryAdapter;
   ApplicationRepositoryAdapter;
+  CollectedExpenseRepositoryAdapter;
 }
 
 export { registerRepositorys };

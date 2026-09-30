@@ -18,5 +18,7 @@ export interface CollectedExpenseData {
   totalExpense: number;
   moneyLeft: number;
   savingsRate: number;
-  items: ExpenseItems[];
+  essentialItems: ExpenseItems[];
+  financialItems: ExpenseItems[];
+  subscriptionItems: ExpenseItems[];
 }

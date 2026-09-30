@@ -29,6 +29,7 @@ class ApplicationRepositoryAdapter
       id: document._id.toHexString(),
       userId: document.userId,
       workflowContext: {
+        id: document.workflowContext.id,
         context: document.workflowContext.context,
         currentNodeId: document.workflowContext.currentNodeId,
       },

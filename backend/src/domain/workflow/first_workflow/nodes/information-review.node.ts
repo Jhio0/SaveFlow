@@ -1,16 +1,26 @@
 import { z } from "zod";
-import { ExpenseItemSchema, noInputSchema } from "./shared-node.type";
+import {
+  ExpenseItemSchema,
+  ExpenseResolveInput,
+  noInputSchema,
+} from "./shared-node.type";
 import { AsyncNode, NoInput, NoOutput } from "myLibrary";
-import { injectable } from "tsyringe";
+import { inject, injectable } from "tsyringe";
 import { ApplicationScreen } from "../../../entities/application";
 import { ExpenseItem } from "../../../../application/api/customer/schema";
+import { RepositoryTokens } from "../../../../lib/injection-tokens/repository-tokens";
+import { CollectedExpenseRepositoryPort } from "../../../repository/collected-expense-data.repository.port";
 
-export const InformationReviewResolveSchema = z.object({
-  incomeAmount: z.number().optional(),
-  essentialItems: z.array(ExpenseItemSchema).optional(),
-  financialLoanItems: z.array(ExpenseItemSchema).optional(),
-  subscriptionItems: z.array(ExpenseItemSchema).optional(),
+export const InformationReviewResolveInputSchema = z.object({
+  userId: z.string(),
+  applicationId: z.string(),
+  incomeAmount: z.number(),
+  essentialItems: z.array(ExpenseItemSchema),
+  financialLoanItems: z.array(ExpenseItemSchema),
+  subscriptionItems: z.array(ExpenseItemSchema),
 });
+
+export const InformationReviewResolveOutputSchema = z.object({});
 
 export const InformationReviewExecuteInputSchema = z.object({
   incomeAmount: z.number(),
@@ -28,11 +38,11 @@ export const InformationReviewExecuteOutputSchema = z.object({
 });
 
 export type InformationReviewResolveInput = z.infer<
-  typeof InformationReviewResolveSchema
+  typeof InformationReviewResolveInputSchema
 >;
 
 export type InformationReviewResolveOutput = z.infer<
-  typeof InformationReviewResolveSchema
+  typeof InformationReviewResolveOutputSchema
 >;
 
 export type InformationReviewExecuteInput = z.infer<
@@ -52,10 +62,13 @@ export class InformationReviewNode extends AsyncNode<
   static readonly NODE_ID = "InformationReview";
   readonly executeInputSchema = InformationReviewExecuteInputSchema;
   readonly executeOutputSchema = InformationReviewExecuteOutputSchema;
-  readonly resolveInputSchema = InformationReviewResolveSchema;
-  readonly resolveOutputSchema = noInputSchema;
+  readonly resolveInputSchema = InformationReviewResolveInputSchema;
+  readonly resolveOutputSchema = InformationReviewResolveOutputSchema;
 
-  constructor() {
+  constructor(
+    @inject(RepositoryTokens.CollectedExpenseDataRepository)
+    private collectedExpenseRepositoryPort: CollectedExpenseRepositoryPort,
+  ) {
     super(InformationReviewNode.NODE_ID);
   }
 
@@ -74,20 +87,35 @@ export class InformationReviewNode extends AsyncNode<
   async resolutionAction(
     input: InformationReviewResolveInput,
   ): Promise<InformationReviewResolveOutput> {
-    return {
-      incomeAmount: input.incomeAmount,
-      essentialItems: this.mapExpenseItems(input.essentialItems),
-      financialLoanItems: this.mapExpenseItems(input.financialLoanItems),
-      subscriptionItems: this.mapExpenseItems(input.subscriptionItems),
-    };
+    const expenseItems = [
+      input.essentialItems,
+      input.financialLoanItems,
+      input.subscriptionItems,
+    ].flat();
+
+    const totalExpense = this.calculateTotalExpenseItems(expenseItems);
+
+    const moneyLeft = input.incomeAmount - totalExpense;
+
+    const savingsRate = (moneyLeft / input.incomeAmount) * 100;
+
+    await this.collectedExpenseRepositoryPort.create({
+      userId: input.userId,
+      applicationId: input.applicationId,
+      income: input.incomeAmount,
+      totalExpense,
+      moneyLeft,
+      savingsRate,
+      essentialItems: input.essentialItems,
+      subscriptionItems: input.subscriptionItems,
+      financialItems: input.financialLoanItems,
+    });
+
+    return {};
   }
 
-  private mapExpenseItems(items?: ExpenseItem[]): ExpenseItem[] | undefined {
-    return items?.map((item) => ({
-      name: item.name,
-      amount: item.amount,
-      source: item.source,
-    }));
+  private calculateTotalExpenseItems(expenseItems: ExpenseItem[]): number {
+    return expenseItems.reduce((total, item) => total + item.amount, 0);
   }
 
   async determineOutputPin(context: NoInput) {
