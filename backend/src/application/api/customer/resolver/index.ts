@@ -6,10 +6,11 @@ import { UserAuthMutationResolver } from "./userAuth/userAuth.mutation.resolver"
 import { UserAuthQueryResolver } from "./userAuth/userAuth.query.resolver";
 import { ApplicationPayload } from "./mutation/submit-screens/mapper/application-payload.mapper";
 import { SubmitInformationReviewScreenMutationResolver } from "./mutation/submit-screens/submit-information-review.mutation.resolver";
+import { GetCollectedExpenseQueryResolver } from "./query/getCollectedExpenseData.resolver";
 
 export function createResolvers() {
   const resolvers = buildResolvers({
-    Query: [UserAuthQueryResolver],
+    Query: [UserAuthQueryResolver, GetCollectedExpenseQueryResolver],
     Mutation: [
       CreateApplicationMutationResolver,
       SubmitExpenseScreenMutationResolver,

@@ -42,6 +42,32 @@ export type CollectIncomePayload = ScreenPayload & {
   screen: ApplicationScreen;
 };
 
+export type CollectedExpenseData = {
+  __typename?: 'CollectedExpenseData';
+  applicationId: Scalars['ID']['output'];
+  essentialItems: Array<CollectedExpenseItem>;
+  financialItems: Array<CollectedExpenseItem>;
+  income: Scalars['Int']['output'];
+  moneyLeft: Scalars['Int']['output'];
+  savingsRate: Scalars['Float']['output'];
+  subscriptionItems: Array<CollectedExpenseItem>;
+  totalExpense: Scalars['Int']['output'];
+  userId: Scalars['ID']['output'];
+};
+
+export type CollectedExpenseItem = {
+  __typename?: 'CollectedExpenseItem';
+  amount: Scalars['Int']['output'];
+  name: Scalars['String']['output'];
+  source: CollectedExpenseSource;
+};
+
+export enum CollectedExpenseSource {
+  ESSENTIALS = 'ESSENTIALS',
+  FINANCIAL_LOAN = 'FINANCIAL_LOAN',
+  SUBSCRIPTION = 'SUBSCRIPTION'
+}
+
 export type CompletedPayload = ScreenPayload & {
   __typename?: 'CompletedPayload';
   applicationId: Scalars['String']['output'];
@@ -144,6 +170,7 @@ export type MutationsubmitInformationReviewScreenArgs = {
 
 export type Query = {
   __typename?: 'Query';
+  collectedExpenseData: CollectedExpenseData;
   login: AuthPayload;
   me?: Maybe<User>;
   user: User;
