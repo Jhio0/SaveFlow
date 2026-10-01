@@ -1,4 +1,3 @@
-import { navigateFromPayload } from "@/feature/helper/buildNextRouteParam";
 import { parseJsonParam } from "@/feature/helper/parseJsonParam";
 import {
   ExpenseSource,
@@ -106,7 +105,7 @@ export function useInformationReviewViewModel() {
   const submit = async () => {
     if (!applicationId) return;
 
-    const result = await submitReview({
+    await submitReview({
       variables: {
         input: {
           applicationId,
@@ -118,11 +117,9 @@ export function useInformationReviewViewModel() {
       },
     });
 
-    navigateFromPayload(
-      router,
-      applicationId,
-      result.data?.submitInformationReviewScreen,
-    );
+    router.push({
+      pathname: "/screens/collected-expense-data-screen",
+    });
   };
 
   return {

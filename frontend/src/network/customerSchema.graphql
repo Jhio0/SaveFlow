@@ -9,6 +9,7 @@ type Query {
   me: User
   login(email: String!, password: String!): AuthPayload!
   user(id: ID!): User!
+  collectedExpenseData: CollectedExpenseData!
 }
 
 type Mutation {
@@ -124,4 +125,28 @@ input InformationReviewScreenInput {
   essentialItems: [ExpenseItemsInput!]
   financialLoanItems: [ExpenseItemsInput!]
   subscriptionItems: [ExpenseItemsInput!]
+}
+
+enum CollectedExpenseSource {
+  ESSENTIALS
+  FINANCIAL_LOAN
+  SUBSCRIPTION
+}
+
+type CollectedExpenseItem {
+  name: String!
+  amount: Int!
+  source: CollectedExpenseSource!
+}
+
+type CollectedExpenseData {
+  userId: ID!
+  applicationId: ID!
+  income: Int!
+  totalExpense: Int!
+  moneyLeft: Int!
+  savingsRate: Float!
+  essentialItems: [CollectedExpenseItem!]!
+  financialItems: [CollectedExpenseItem!]!
+  subscriptionItems: [CollectedExpenseItem!]!
 }
