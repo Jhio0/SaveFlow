@@ -10,16 +10,16 @@ export const collectedExpenseSchema = gql`
 
   type CollectedExpenseItem {
     name: String!
-    amount: Int!
+    amount: Float!
     source: CollectedExpenseSource!
   }
 
   type CollectedExpenseData {
     userId: ID!
     applicationId: ID!
-    income: Int!
-    totalExpense: Int!
-    moneyLeft: Int!
+    income: Float!
+    totalExpense: Float!
+    moneyLeft: Float!
     savingsRate: Float!
     essentialItems: [CollectedExpenseItem!]!
     financialItems: [CollectedExpenseItem!]!

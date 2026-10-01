@@ -15,7 +15,7 @@ export const applicationSchema = gql`
 
   type ExpenseItem {
     name: String!
-    amount: Int!
+    amount: Float!
     source: ExpenseSource!
   }
 
@@ -47,7 +47,7 @@ export const applicationSchema = gql`
   type InformationReviewPayload implements ScreenPayload {
     applicationId: String!
     screen: ApplicationScreen!
-    incomeAmount: Int!
+    incomeAmount: Float!
     essentialItems: [ExpenseItem!]!
     financialLoanItems: [ExpenseItem!]!
     subscriptionItems: [ExpenseItem!]!
@@ -68,13 +68,13 @@ export const applicationSchema = gql`
 
   input ExpenseItemsInput {
     name: String!
-    amount: Int!
+    amount: Float!
     source: ExpenseSource!
   }
 
   input CollectIncomeApplicationInput {
     applicationId: ID!
-    incomeAmount: Int!
+    incomeAmount: Float!
   }
   
   input ExpenseApplicationInput {
@@ -84,7 +84,7 @@ export const applicationSchema = gql`
 
   input InformationReviewScreenInput {
     applicationId: ID!
-    incomeAmount: Int
+    incomeAmount: Float
     essentialItems: [ExpenseItemsInput!]
     financialLoanItems: [ExpenseItemsInput!]
     subscriptionItems: [ExpenseItemsInput!]

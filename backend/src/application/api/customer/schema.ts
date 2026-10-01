@@ -33,7 +33,7 @@ export type AuthPayload = {
 
 export type CollectIncomeApplicationInput = {
   applicationId: Scalars['ID']['input'];
-  incomeAmount: Scalars['Int']['input'];
+  incomeAmount: Scalars['Float']['input'];
 };
 
 export type CollectIncomePayload = ScreenPayload & {
@@ -47,17 +47,17 @@ export type CollectedExpenseData = {
   applicationId: Scalars['ID']['output'];
   essentialItems: Array<CollectedExpenseItem>;
   financialItems: Array<CollectedExpenseItem>;
-  income: Scalars['Int']['output'];
-  moneyLeft: Scalars['Int']['output'];
+  income: Scalars['Float']['output'];
+  moneyLeft: Scalars['Float']['output'];
   savingsRate: Scalars['Float']['output'];
   subscriptionItems: Array<CollectedExpenseItem>;
-  totalExpense: Scalars['Int']['output'];
+  totalExpense: Scalars['Float']['output'];
   userId: Scalars['ID']['output'];
 };
 
 export type CollectedExpenseItem = {
   __typename?: 'CollectedExpenseItem';
-  amount: Scalars['Int']['output'];
+  amount: Scalars['Float']['output'];
   name: Scalars['String']['output'];
   source: CollectedExpenseSource;
 };
@@ -87,13 +87,13 @@ export type ExpenseApplicationInput = {
 
 export type ExpenseItem = {
   __typename?: 'ExpenseItem';
-  amount: Scalars['Int']['output'];
+  amount: Scalars['Float']['output'];
   name: Scalars['String']['output'];
   source: ExpenseSource;
 };
 
 export type ExpenseItemsInput = {
-  amount: Scalars['Int']['input'];
+  amount: Scalars['Float']['input'];
   name: Scalars['String']['input'];
   source: ExpenseSource;
 };
@@ -115,7 +115,7 @@ export type InformationReviewPayload = ScreenPayload & {
   applicationId: Scalars['String']['output'];
   essentialItems: Array<ExpenseItem>;
   financialLoanItems: Array<ExpenseItem>;
-  incomeAmount: Scalars['Int']['output'];
+  incomeAmount: Scalars['Float']['output'];
   screen: ApplicationScreen;
   subscriptionItems: Array<ExpenseItem>;
 };
@@ -124,7 +124,7 @@ export type InformationReviewScreenInput = {
   applicationId: Scalars['ID']['input'];
   essentialItems?: InputMaybe<Array<ExpenseItemsInput>>;
   financialLoanItems?: InputMaybe<Array<ExpenseItemsInput>>;
-  incomeAmount?: InputMaybe<Scalars['Int']['input']>;
+  incomeAmount?: InputMaybe<Scalars['Float']['input']>;
   subscriptionItems?: InputMaybe<Array<ExpenseItemsInput>>;
 };
 
