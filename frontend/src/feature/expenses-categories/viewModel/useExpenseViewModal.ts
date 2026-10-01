@@ -1,4 +1,3 @@
-// viewModels/useExpensesViewModel.ts
 import { ExpenseSource } from "@/network/__generated__/graphql";
 import { useState } from "react";
 import { ExpenseCategory, ExpenseItem } from "../model/expense";
@@ -17,17 +16,14 @@ export function useExpensesViewModel<TResult>({
   initialItems,
 }: UseExpensesViewModelParams<TResult>) {
   const [categories, setCategories] = useState<ExpenseCategory[]>(() => {
-    // No existing items → normal create mode
     if (!initialItems || initialItems.length === 0) {
       return defaultCategories;
     }
-
-    // Existing items → edit mode
     return initialItems.map((item, index) => ({
       id: `${item.source}_${item.name}_${index}`,
       name: item.name,
       enabled: true,
-      amount: item.amount,
+      amount: item.amount.toString(), // ← add .toString() here
       source: item.source,
     }));
   });
@@ -47,20 +43,22 @@ export function useExpensesViewModel<TResult>({
   };
 
   const onAmountChange = (id: string, value: string) => {
-    const parsed = value === "" ? null : Number(value);
     setCategories((prev) =>
       prev.map((category) =>
-        category.id === id ? { ...category, amount: parsed } : category,
+        category.id === id
+          ? { ...category, amount: value === "" ? null : value }
+          : category,
       ),
     );
   };
+  // CHANGED — now takes amount directly, category is created fully filled-in
 
-  const onAddCustomCategory = (name: string) => {
+  const onAddCustomCategory = (name: string, amount: number) => {
     const newCategory: ExpenseCategory = {
       id: `custom_${Date.now()}`,
       name,
       enabled: true,
-      amount: null,
+      amount: amount.toString(), // store as string, consistent with the rest
       source,
     };
     setCategories((prev) => [...prev, newCategory]);
@@ -71,22 +69,21 @@ export function useExpensesViewModel<TResult>({
   };
 
   const hasAtLeastOneAmount = categories.some(
-    (c) => c.enabled && c.amount !== null && c.amount > 0,
+    (c) => c.enabled && c.amount !== null && Number(c.amount) > 0,
   );
 
   const getItems = (): ExpenseItem[] => {
     return categories
-      .filter((c) => c.enabled && c.amount !== null)
+      .filter((c) => c.enabled && c.amount !== null && Number(c.amount) > 0)
       .map((c) => ({
         name: c.name,
-        amount: c.amount!,
+        amount: Number(c.amount), // parse to number ONLY here, at submit time
         source,
       }));
   };
 
   const submit = async () => {
     const items = getItems();
-
     return onSubmit(items);
   };
 

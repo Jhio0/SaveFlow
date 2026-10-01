@@ -19,7 +19,7 @@ export function CollectIncomeScreen({
   financialLoanItems,
   subscriptionItems,
 }: CollectIncomeScreenProps) {
-  const { incomeAmount, submit, onIncomeAmountChange } =
+  const { incomeAmount, submit, onIncomeAmountChange, isSubmitting } =
     useCollectIncomeViewModel(applicationId, {
       editing,
       initialIncomeAmount,
@@ -53,7 +53,6 @@ export function CollectIncomeScreen({
             <Text fontSize="$9" fontWeight="800" lineHeight="$9">
               What's your income this month?
             </Text>
-
             <Text fontSize="$4" color="$gray10">
               Enter what you expect to bring in this month.
             </Text>
@@ -65,7 +64,7 @@ export function CollectIncomeScreen({
             gap="$2"
             borderWidth={2}
             borderColor="$borderColor"
-            border="$6"
+            style={{ borderRadius: 14 }}
             py="$5"
             px="$4"
             background="$backgroundStrong"
@@ -74,17 +73,16 @@ export function CollectIncomeScreen({
             <Text fontSize="$9" fontWeight="700" color="$gray10">
               $
             </Text>
-
             <Input
               unstyled
               flex={1}
               placeholder="0"
-              keyboardType="numeric"
+              keyboardType="decimal-pad"
               value={incomeAmount}
               onChangeText={onIncomeAmountChange}
               fontSize="$9"
               fontWeight="700"
-              textAlign="center"
+              style={{ textAlign: "center" }}
               autoFocus
               color="$gray10"
             />
@@ -93,15 +91,19 @@ export function CollectIncomeScreen({
 
         <Button
           size="$5"
-          border="$6"
+          style={{ borderRadius: 14 }}
           background="$blue9"
           color="white"
           fontWeight="700"
           onPress={submit}
-          disabled={!incomeAmount}
-          opacity={!incomeAmount ? 0.5 : 1}
+          disabled={!incomeAmount || isSubmitting}
+          opacity={!incomeAmount || isSubmitting ? 0.5 : 1}
         >
-          Continue
+          {isSubmitting
+            ? "Saving..."
+            : editing
+              ? "Save and return to review"
+              : "Continue"}
         </Button>
       </YStack>
     </TouchableWithoutFeedback>
