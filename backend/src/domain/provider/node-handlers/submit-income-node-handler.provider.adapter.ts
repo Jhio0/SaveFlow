@@ -22,13 +22,15 @@ export class SubmitIncomeNodeHandlerProviderAdapter implements SubmitIncomeNodeH
   async handleIncomeNodeHandler(
     input: handleIncomeNodeHandlerInput,
   ): Promise<ApplicationPayload> {
+    if (input.incomeAmount < 0) {
+      throw new Error("Income cannot be negative");
+    }
+
     const screen =
       await this.applicationProviderPort.submitScreen<CollectIncomeResolveInput>(
         input.applicationId,
         { incomeAmount: input.incomeAmount },
       );
-
-    console.log(screen);
 
     return screen;
   }
