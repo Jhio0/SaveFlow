@@ -1,8 +1,10 @@
-// viewModels/createExpenseViewModel.ts
-import { ExpenseSource } from "@/network/__generated__/graphql";
 import { OperationVariables } from "@apollo/client";
-import { useMutation } from "@apollo/client/react";
+
 import type { TypedDocumentNode } from "@graphql-typed-document-node/core";
+
+import { ExpenseSource } from "@/network/__generated__/graphql";
+
+import { useHandleMutation } from "@/components/shared/useHandleMutation";
 import { ExpenseCategory, ExpenseItem } from "../model/expense";
 import { useExpensesViewModel } from "./useExpenseViewModal";
 
@@ -37,23 +39,28 @@ export function createExpenseViewModel<
     applicationId: string,
     options: ExpenseViewModelOptions = {},
   ) {
-    const [submitMutation, { loading, error }] = useMutation(mutationDocument);
+    const [submitMutation, { loading }] = useHandleMutation(
+      mutationDocument,
+      "Unable to save your expenses.",
+    );
 
     const vm = useExpensesViewModel<TPayload>({
       defaultCategories,
       source,
       initialItems: options.initialItems,
+
       onSubmit: async (items) => {
         const result = await submitMutation({
           variables: buildVariables(applicationId, items),
         });
 
-        const payload = getPayload(result.data);
-
-        return payload;
+        return getPayload(result.data);
       },
     });
 
-    return { ...vm, loading, error };
+    return {
+      ...vm,
+      loading,
+    };
   };
 }

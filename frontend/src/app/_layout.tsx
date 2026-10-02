@@ -1,9 +1,9 @@
-// app/_layout.tsx
 import { ApolloProvider } from "@apollo/client/react";
 import { Slot } from "expo-router";
 import { Keyboard, TouchableWithoutFeedback, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import Toast from "react-native-toast-message";
 import { TamaguiProvider, Theme } from "tamagui";
 
 import { AppShell } from "@/feature/home/view/app-shell";
@@ -35,6 +35,8 @@ export default function RootLayout() {
           </Theme>
         </TamaguiProvider>
       </ApolloProvider>
+
+      <Toast />
     </GestureHandlerRootView>
   );
 }

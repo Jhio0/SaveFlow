@@ -1,12 +1,17 @@
-import { CollectedExpenseDataDocument } from "@/network/__generated__/graphql";
-import { useQuery } from "@apollo/client/react";
+// feature/dashboard/viewModels/useDashboardViewModel.ts
+
 import { useRouter } from "expo-router";
+
+import { useHandleQuery } from "@/components/shared/useHandleQuery";
+import { CollectedExpenseDataDocument } from "@/network/__generated__/graphql";
 
 export function useDashboardViewModel() {
   const router = useRouter();
 
-  const { data, loading, error, refetch } = useQuery(
+  const { data, loading, error, refetch } = useHandleQuery(
     CollectedExpenseDataDocument,
+    {}, // No variables required
+    "Unable to load your dashboard.",
   );
 
   const dashboard = data?.collectedExpenseData;

@@ -1,7 +1,9 @@
-import { useMutation } from "@apollo/client/react";
+// feature/income/viewModels/useCollectIncomeViewModel.ts
+
 import { useRouter } from "expo-router";
 import { useState } from "react";
 
+import { useHandleMutation } from "@/components/shared/useHandleMutation";
 import { navigateFromPayload } from "@/feature/helper/buildNextRouteParam";
 import { SubmitCollectIncomeScreenDocument } from "@/network/__generated__/graphql";
 
@@ -29,8 +31,9 @@ export function useCollectIncomeViewModel(
 
   const [incomeAmount, setIncomeAmount] = useState(initialIncomeAmount ?? "");
 
-  const [submitIncome, { loading, error }] = useMutation(
+  const [submitIncome, { loading }] = useHandleMutation(
     SubmitCollectIncomeScreenDocument,
+    "Unable to save your income.",
   );
 
   const onIncomeAmountChange = (value: string) => {
@@ -38,7 +41,6 @@ export function useCollectIncomeViewModel(
   };
 
   const submit = async () => {
-    // EDIT MODE
     if (editing) {
       router.replace({
         pathname: "/screens/information-review-screen",
@@ -75,6 +77,5 @@ export function useCollectIncomeViewModel(
     onIncomeAmountChange,
     submit,
     isSubmitting: loading,
-    submitError: error,
   };
 }

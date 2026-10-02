@@ -1,10 +1,11 @@
+import { useLocalSearchParams, useRouter } from "expo-router";
+
+import { useHandleMutation } from "@/components/shared/useHandleMutation";
 import { parseJsonParam } from "@/feature/helper/parseJsonParam";
 import {
   ExpenseSource,
   SubmitInformationReviewScreenDocument,
 } from "@/network/__generated__/graphql";
-import { useMutation } from "@apollo/client/react";
-import { useLocalSearchParams, useRouter } from "expo-router";
 
 type ExpenseItem = {
   name: string;
@@ -54,14 +55,15 @@ export function useInformationReviewViewModel() {
     source,
   }));
 
-  const [submitReview, { loading, error }] = useMutation(
+  const [submitReview, { loading }] = useHandleMutation(
     SubmitInformationReviewScreenDocument,
+    "Unable to submit your information.",
   );
 
   const totalExpenses =
-    essentialItems.reduce((s, i) => s + i.amount, 0) +
-    financialLoanItems.reduce((s, i) => s + i.amount, 0) +
-    subscriptionItems.reduce((s, i) => s + i.amount, 0);
+    essentialItems.reduce((total, item) => total + item.amount, 0) +
+    financialLoanItems.reduce((total, item) => total + item.amount, 0) +
+    subscriptionItems.reduce((total, item) => total + item.amount, 0);
 
   const moneyLeft = (incomeAmount ?? 0) - totalExpenses;
 
@@ -110,16 +112,14 @@ export function useInformationReviewViewModel() {
         input: {
           applicationId,
           incomeAmount,
-          essentialItems: essentialItems,
-          financialLoanItems: financialLoanItems,
-          subscriptionItems: subscriptionItems,
+          essentialItems,
+          financialLoanItems,
+          subscriptionItems,
         },
       },
     });
 
-    router.push({
-      pathname: "/screens/collected-expense-data-screen",
-    });
+    router.push("/screens/collected-expense-data-screen");
   };
 
   return {
@@ -135,6 +135,5 @@ export function useInformationReviewViewModel() {
     editSubscriptions,
     submit,
     isSubmitting: loading,
-    submitError: error,
   };
 }
