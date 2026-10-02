@@ -38,7 +38,7 @@ export function useLoginViewModel() {
 
     await SecureStore.setItemAsync(SESSION_KEY, payload.sessionId);
 
-    router.replace("/screens/create-application-screen");
+    router.replace("/screens/home-screen");
   };
 
   return {

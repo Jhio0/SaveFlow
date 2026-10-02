@@ -6,6 +6,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { TamaguiProvider, Theme } from "tamagui";
 
+import { AppShell } from "@/feature/home/view/app-shell";
 import { client } from "@/network/graphqlClient";
 import tamaguiConfig from "../tamagui.config";
 
@@ -16,10 +17,17 @@ export default function RootLayout() {
         <TamaguiProvider config={tamaguiConfig} defaultTheme="dark">
           <Theme name="dark">
             <SafeAreaProvider>
-              <SafeAreaView style={{ flex: 1, backgroundColor: "#000" }}>
+              <SafeAreaView
+                style={{
+                  flex: 1,
+                  backgroundColor: "#000",
+                }}
+              >
                 <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                   <View style={{ flex: 1 }}>
-                    <Slot />
+                    <AppShell>
+                      <Slot />
+                    </AppShell>
                   </View>
                 </TouchableWithoutFeedback>
               </SafeAreaView>
